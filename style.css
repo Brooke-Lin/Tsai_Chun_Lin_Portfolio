@@ -298,3 +298,46 @@ body {
     text-align: center;
     font-size: 0.9em;
 }
+
+/* Mobile responsiveness for chat */
+@media (max-width: 768px) {
+    .chat-section {
+        width: calc(100vw - 40px);
+        max-width: 350px;
+        right: 20px;
+        left: 20px;
+        margin: 0 auto;
+    }
+    
+    .chat-toggle-btn {
+        width: 50px;
+        height: 50px;
+        font-size: 1.5rem;
+    }
+    
+    .coming-soon {
+        font-size: 0.85em;
+        padding: 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    .chat-section {
+        width: calc(100vw - 20px);
+        right: 10px;
+        left: 10px;
+        height: 350px;
+        bottom: 80px;
+    }
+    
+    .chat-toggle-btn {
+        right: 15px;
+        bottom: 15px;
+    }
+    
+    .coming-soon {
+        font-size: 0.8em;
+        padding: 6px;
+        line-height: 1.3;
+    }
+}

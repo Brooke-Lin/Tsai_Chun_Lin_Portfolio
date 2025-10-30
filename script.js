@@ -35,6 +35,18 @@ const closeButton = document.getElementById('close-chat');
 
 toggleButton.addEventListener('click', () => {
   chatSection.classList.toggle('active');
+  
+  // Ensure coming soon message is visible on GitHub Pages when chat opens
+  if (isGitHubPages && chatSection.classList.contains('active')) {
+    const existingMessage = chatBox.querySelector('.coming-soon');
+    
+    if (!existingMessage) {
+      const comingSoonMessage = document.createElement('div');
+      comingSoonMessage.className = 'coming-soon';
+      comingSoonMessage.innerHTML = '💡 <strong>AI Chat Coming Soon!</strong><br>The interactive chat feature requires a backend server and will be available when deployed with full infrastructure.';
+      chatBox.insertBefore(comingSoonMessage, chatBox.firstChild);
+    }
+  }
 });
 
 closeButton.addEventListener('click', () => {
@@ -47,7 +59,7 @@ const chatForm = document.getElementById("chat-form");
 const chatInput = document.getElementById("chat-input");
 const chatBox = document.getElementById("chat-box");
 
-// Check if we're on GitHub Pages
+// Check if we're on GitHub Pages (moved to top to avoid redeclaration)
 const isGitHubPages = window.location.hostname.includes('github.io');
 
 // Add coming soon message for GitHub Pages
