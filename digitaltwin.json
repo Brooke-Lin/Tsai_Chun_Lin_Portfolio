@@ -1,0 +1,74 @@
+{
+  "content_chunks": [
+    {
+      "id": "personal_info",
+      "title": "Personal Information",
+      "type": "section",
+      "content": "My name is Tsai Chun Lin. I graduated from Victoria University with a Master of Applied Information Technology. I am passionate about frontend and full-stack development and want to build engaging web applications.",
+      "metadata": {
+        "category": "personal",
+        "tags": ["profile", "bio"]
+      }
+    },
+    {
+      "id": "career_objective",
+      "title": "Career Objective",
+      "type": "section",
+      "content": "I aim to obtain a position as a Frontend or Full-Stack Developer to apply my technical skills, creativity, and problem-solving skills to build efficient web applications and contribute to a dynamic team.",
+      "metadata": {
+        "category": "career",
+        "tags": ["objective", "goal"]
+      }
+    },
+    {
+      "id": "education",
+      "title": "Education",
+      "type": "section",
+      "content": "Master of Applied Information Technology, Victoria University (2024-2025), GPA: 6.25. Previously, Master of Information Systems & Advertising, University of Queensland (2021-2023), GPA: 5.37.",
+      "metadata": {
+        "category": "education",
+        "tags": ["education", "university"]
+      }
+    },
+    {
+      "id": "experience",
+      "title": "Work Experience",
+      "type": "section",
+      "content": "Intern at Ben Cutains (Jan 2025 - Apr 2025) as Technical Support: organized website content and images via WordPress, also did sales tasks. Currently working part-time as a Barista at Kitchen Montague: coffee making and customer service. University project experience includes developing a Book 2 Drive prototype app with 3 team members, designing UI/UX using HTML, CSS, JavaScript, PHP, and MySQL, creating ERD, app workflow, and use case diagrams.",
+      "metadata": {
+        "category": "experience",
+        "tags": ["work", "internship", "projects"]
+      }
+    },
+    {
+      "id": "skills",
+      "title": "Technical Skills",
+      "type": "section",
+      "content": "Python (5 years), JavaScript (1 year), PHP (6 months), HTML, CSS, Bootstrap, MySQL, Git/GitHub.",
+      "metadata": {
+        "category": "skills",
+        "tags": ["technical", "programming"]
+      }
+    },
+    {
+      "id": "projects",
+      "title": "Projects",
+      "type": "section",
+      "content": "Book 2 Drive App (2025) - Full-stack web application with user authentication, MySQL integration, responsive design. News Homepage (2024) - Responsive news portal using HTML, CSS, Bootstrap. Multi Steps Form (2024) - Responsive multi-step form with validation and progress indicators.",
+      "metadata": {
+        "category": "projects",
+        "tags": ["projects", "portfolio"]
+      }
+    },
+    {
+      "id": "career_goals",
+      "title": "Career Goals",
+      "type": "section",
+      "content": "Short-term: Obtain a frontend or full-stack developer role. Long-term: Become a senior developer or technical lead. Focus on learning advanced web technologies, UX/UI design, and collaborative development.",
+      "metadata": {
+        "category": "career",
+        "tags": ["goals", "future"]
+      }
+    }
+  ]
+}
