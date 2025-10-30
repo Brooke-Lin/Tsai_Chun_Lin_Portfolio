@@ -1,0 +1,33 @@
+# Environment variables
+.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+venv/
+env/
+
+# VS Code
+.vscode/
+
+# MCP and backend files (not needed for GitHub Pages)
+digital_twin_mcp_server.py
+digitaltwin_api.py
+digitaltwin_rg.py
+start_mcp_server.py
+
+# Documentation (optional - uncomment if you want to exclude)
+# *.md
+
+# Job postings (optional)
+job-postings/
+
+# Node modules (if any)
+node_modules/
+
+# Operating System
+.DS_Store
+Thumbs.db

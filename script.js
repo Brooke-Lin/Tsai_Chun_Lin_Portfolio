@@ -49,12 +49,47 @@ const chatBox = document.getElementById("chat-box");
 
 chatForm.addEventListener("submit", async (e) => {
   e.preventDefault();
-  const question = chatInput.value;
+  const question = chatInput.value.trim();
+  
+  if (!question) return; // Don't send empty messages
+  
+  // Add user message
   chatBox.innerHTML += `<p><b>You:</b> ${question}</p>`;
-
-  const response = await fetch(`http://127.0.0.1:8001/ask?question=${encodeURIComponent(question)}`);
-  const data = await response.json();
-
-  chatBox.innerHTML += `<p><b>Digital Twin:</b> ${data.answer}</p>`;
   chatInput.value = "";
+  
+  // Show loading indicator
+  chatBox.innerHTML += `<p><b>Digital Twin:</b> <em>Thinking...</em></p>`;
+  chatBox.scrollTop = chatBox.scrollHeight; // Auto scroll to bottom
+  
+  try {
+    const response = await fetch(`http://127.0.0.1:8001/ask?question=${encodeURIComponent(question)}`);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    
+    // Remove loading indicator
+    const messages = chatBox.children;
+    const lastMessage = messages[messages.length - 1];
+    lastMessage.remove();
+    
+    // Add AI response
+    chatBox.innerHTML += `<p><b>Digital Twin:</b> ${data.answer}</p>`;
+    
+  } catch (error) {
+    console.error('Chat error:', error);
+    
+    // Remove loading indicator
+    const messages = chatBox.children;
+    const lastMessage = messages[messages.length - 1];
+    lastMessage.remove();
+    
+    // Show error message
+    chatBox.innerHTML += `<p><b>Digital Twin:</b> <em style="color: red;">Sorry, I'm having trouble connecting. Please make sure the server is running and try again.</em></p>`;
+  }
+  
+  // Auto scroll to bottom
+  chatBox.scrollTop = chatBox.scrollHeight;
 });
