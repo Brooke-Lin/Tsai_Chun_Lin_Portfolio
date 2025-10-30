@@ -47,6 +47,17 @@ const chatForm = document.getElementById("chat-form");
 const chatInput = document.getElementById("chat-input");
 const chatBox = document.getElementById("chat-box");
 
+// Check if we're on GitHub Pages
+const isGitHubPages = window.location.hostname.includes('github.io');
+
+// Add coming soon message for GitHub Pages
+if (isGitHubPages) {
+  const comingSoonMessage = document.createElement('div');
+  comingSoonMessage.className = 'coming-soon';
+  comingSoonMessage.innerHTML = '💡 <strong>AI Chat Coming Soon!</strong><br>The interactive chat feature requires a backend server and will be available when deployed with full infrastructure.';
+  chatBox.appendChild(comingSoonMessage);
+}
+
 chatForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   const question = chatInput.value.trim();
@@ -57,7 +68,15 @@ chatForm.addEventListener("submit", async (e) => {
   chatBox.innerHTML += `<p><b>You:</b> ${question}</p>`;
   chatInput.value = "";
   
-  // Show loading indicator
+  // Show different behavior for GitHub Pages vs local
+  if (isGitHubPages) {
+    // For GitHub Pages, show a helpful message
+    chatBox.innerHTML += `<p><b>Digital Twin:</b> <em style="color: #666;">Thanks for your interest! This AI chat feature is currently available when running locally with the backend server. For now, you can view my portfolio and download my resume to learn more about my experience.</em></p>`;
+    chatBox.scrollTop = chatBox.scrollHeight;
+    return;
+  }
+  
+  // Show loading indicator for local development
   chatBox.innerHTML += `<p><b>Digital Twin:</b> <em>Thinking...</em></p>`;
   chatBox.scrollTop = chatBox.scrollHeight; // Auto scroll to bottom
   
