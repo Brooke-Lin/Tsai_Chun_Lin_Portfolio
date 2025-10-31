@@ -2,7 +2,7 @@
   "version": 2,
   "functions": {
     "api/chat.py": {
-      "runtime": "@vercel/python"
+      "runtime": "@vercel/python@3.11.0"
     }
   },
   "routes": [
