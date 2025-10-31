@@ -1,9 +1,6 @@
+from http.server import BaseHTTPRequestHandler
 import json
-import os
-import sys
-
-# Add current directory to path for imports
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+import urllib.parse
 
 def get_fallback_response(question: str) -> str:
     """Enhanced fallback responses with better keyword matching"""
@@ -32,74 +29,61 @@ def get_fallback_response(question: str) -> str:
     
     return "Thank you for your question! I'm a digital twin assistant representing Tsai Chun Lin. I can help you learn about my background, experience, technical skills, projects, and education. Feel free to ask about any aspect of my professional profile!"
 
-def handler(event, context):
-    """Main Vercel serverless function handler"""
-    
-    # CORS headers for all responses
-    headers = {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type',
-        'Content-Type': 'application/json'
-    }
-    
-    try:
-        # Handle preflight OPTIONS requests
-        if event.get('httpMethod') == 'OPTIONS':
-            return {
-                'statusCode': 200,
-                'headers': headers,
-                'body': json.dumps({'message': 'CORS preflight'})
-            }
+class handler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        # Parse URL and query parameters
+        parsed_url = urllib.parse.urlparse(self.path)
+        query_params = urllib.parse.parse_qs(parsed_url.query)
         
-        # Extract query parameters
-        query_params = event.get('queryStringParameters') or {}
+        # Set CORS headers
+        self.send_response(200)
+        self.send_header('Access-Control-Allow-Origin', '*')
+        self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+        self.send_header('Access-Control-Allow-Headers', 'Content-Type')
+        self.send_header('Content-Type', 'application/json')
+        self.end_headers()
         
-        # Validate question parameter
-        if not query_params or 'question' not in query_params:
-            return {
-                'statusCode': 400,
-                'headers': headers,
-                'body': json.dumps({
-                    "error": "Missing question parameter", 
-                    "answer": "Please provide a question parameter. For example: /ask?question=What is your experience?"
-                })
-            }
-        
-        question = query_params['question'].strip()
-        
-        if not question:
-            return {
-                'statusCode': 400,
-                'headers': headers,
-                'body': json.dumps({
-                    "error": "Empty question", 
+        try:
+            # Get question parameter
+            if 'question' not in query_params:
+                response = {
+                    "error": "Missing question parameter",
+                    "answer": "Please provide a question parameter. For example: /api/chat?question=What is your experience?"
+                }
+                self.wfile.write(json.dumps(response).encode())
+                return
+            
+            question = query_params['question'][0].strip()
+            
+            if not question:
+                response = {
+                    "error": "Empty question",
                     "answer": "Please provide a valid question about my background, skills, or experience."
-                })
-            }
-        
-        # Use fallback response system (RAG system not available in Vercel deployment)
-        print("Using fallback response system")
-        answer = get_fallback_response(question)
-        
-        # Return successful response
-        return {
-            'statusCode': 200,
-            'headers': headers,
-            'body': json.dumps({
+                }
+                self.wfile.write(json.dumps(response).encode())
+                return
+            
+            # Get response using fallback system
+            answer = get_fallback_response(question)
+            
+            response = {
                 "answer": answer,
                 "source": "digital_twin_assistant"
-            })
-        }
-        
-    except Exception as e:
-        print(f"Error in handler: {str(e)}")
-        return {
-            'statusCode': 500,
-            'headers': headers,
-            'body': json.dumps({
+            }
+            
+            self.wfile.write(json.dumps(response).encode())
+            
+        except Exception as e:
+            response = {
                 "error": "Internal server error",
-                "answer": "I apologize, but I'm experiencing technical difficulties. Please try again in a moment, or feel free to explore my portfolio and download my resume for more information about my background.",
-                "debug": str(e) if os.environ.get('DEBUG') else None
-            })
-        }
+                "answer": "I apologize, but I'm experiencing technical difficulties. Please try again in a moment, or feel free to explore my portfolio and download my resume for more information about my background."
+            }
+            self.wfile.write(json.dumps(response).encode())
+    
+    def do_OPTIONS(self):
+        # Handle CORS preflight requests
+        self.send_response(200)
+        self.send_header('Access-Control-Allow-Origin', '*')
+        self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+        self.send_header('Access-Control-Allow-Headers', 'Content-Type')
+        self.end_headers()
