@@ -80,7 +80,7 @@ chatForm.addEventListener("submit", async (e) => {
   chatBox.innerHTML += `<p><b>You:</b> ${question}</p>`;
   chatInput.value = "";
   
-  // Show different behavior for GitHub Pages vs local
+  // Show different behavior for different environments
   if (isGitHubPages) {
     // For GitHub Pages, show a helpful message
     chatBox.innerHTML += `<p><b>Digital Twin:</b> <em style="color: #666;">Thanks for your interest! This AI chat feature is currently available when running locally with the backend server. For now, you can view my portfolio and download my resume to learn more about my experience.</em></p>`;
@@ -88,12 +88,17 @@ chatForm.addEventListener("submit", async (e) => {
     return;
   }
   
-  // Show loading indicator for local development
+  // Show loading indicator
   chatBox.innerHTML += `<p><b>Digital Twin:</b> <em>Thinking...</em></p>`;
   chatBox.scrollTop = chatBox.scrollHeight; // Auto scroll to bottom
   
   try {
-    const response = await fetch(`http://127.0.0.1:8001/ask?question=${encodeURIComponent(question)}`);
+    // Determine API URL based on environment
+    const apiUrl = window.location.hostname.includes('vercel.app') || window.location.hostname.includes('your-domain.com')
+      ? '/ask'  // Production API endpoint
+      : 'http://127.0.0.1:8001/ask';  // Local development
+    
+    const response = await fetch(`${apiUrl}?question=${encodeURIComponent(question)}`);
     
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -118,7 +123,7 @@ chatForm.addEventListener("submit", async (e) => {
     lastMessage.remove();
     
     // Show error message
-    chatBox.innerHTML += `<p><b>Digital Twin:</b> <em style="color: red;">Sorry, I'm having trouble connecting. Please make sure the server is running and try again.</em></p>`;
+    chatBox.innerHTML += `<p><b>Digital Twin:</b> <em style="color: red;">Sorry, I'm having trouble connecting. Please try again in a moment.</em></p>`;
   }
   
   // Auto scroll to bottom

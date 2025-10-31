@@ -1,0 +1,158 @@
+{
+  "content_chunks": [
+    {
+      "id": "personal_info",
+      "title": "Personal Information",
+      "type": "section",
+      "content": "My name is Tsai Chun Lin. I graduated from Victoria University with a Master of Applied Information Technology. I am passionate about frontend and full-stack development and want to build engaging web applications.",
+      "metadata": {
+        "category": "personal",
+        "tags": [
+          "profile",
+          "bio"
+        ]
+      }
+    },
+    {
+      "id": "career_objective",
+      "title": "Career Objective",
+      "type": "section",
+      "content": "I aim to obtain a position as a Frontend or Full-Stack Developer to apply my technical skills, creativity, and problem-solving skills to build efficient web applications and contribute to a dynamic team.",
+      "metadata": {
+        "category": "career",
+        "tags": [
+          "objective",
+          "goal"
+        ]
+      }
+    },
+    {
+      "id": "salary_location_info",
+      "title": "Salary and Location Preferences",
+      "type": "section",
+      "content": "Expected salary range: $65,000 - $85,000 AUD annually for entry to mid-level developer roles. Open to Melbourne, Sydney, Brisbane locations. Willing to relocate within Australia. Available for hybrid work arrangements. Can start immediately or with 2 weeks notice. Authorized to work in Australia.",
+      "metadata": {
+        "category": "employment",
+        "tags": [
+          "salary",
+          "location",
+          "availability"
+        ]
+      }
+    },
+    {
+      "id": "education",
+      "title": "Education",
+      "type": "section",
+      "content": "Master of Applied Information Technology, Victoria University (2024-2025), GPA: 6.25. Coursework: Advanced Web Development, Database Systems, Software Engineering, Cloud Computing, Cybersecurity. Previously, Master of Information Systems & Advertising, University of Queensland (2021-2023), GPA: 5.37. Relevant projects included web application development, database design, and system analysis.",
+      "metadata": {
+        "category": "education",
+        "tags": [
+          "education",
+          "university",
+          "coursework"
+        ]
+      }
+    },
+    {
+      "id": "experience_detailed",
+      "title": "Work Experience - Detailed",
+      "type": "section",
+      "content": "Technical Support Intern at Ben Cutains (Jan 2025 - Apr 2025): Situation - Company needed website content management and technical support. Task - Organize website content, manage images via WordPress, assist with sales tasks. Action - Implemented systematic content organization, optimized image formats for web performance, created content guidelines for team. Result - Improved website loading speed by 30%, streamlined content workflow, supported $15K in additional sales through technical assistance. Currently Part-time Barista at Kitchen Montague: Developed customer service skills, time management under pressure, team collaboration in fast-paced environment.",
+      "metadata": {
+        "category": "experience",
+        "tags": [
+          "work",
+          "internship",
+          "STAR",
+          "achievements"
+        ]
+      }
+    },
+    {
+      "id": "skills_detailed",
+      "title": "Technical Skills - Detailed",
+      "type": "section",
+      "content": "Programming Languages: Python (5 years, advanced level) - web frameworks, data analysis, automation scripts; JavaScript (1 year, intermediate) - DOM manipulation, ES6+, async programming; PHP (6 months, beginner-intermediate) - server-side development, MySQL integration. Frontend: HTML5, CSS3, Bootstrap, responsive design, cross-browser compatibility. Database: MySQL - design, queries, optimization. Version Control: Git/GitHub - branching, merging, collaborative development. Currently learning: React.js, Node.js, Express.js. Familiar with: Agile methodologies, testing fundamentals, documentation practices.",
+      "metadata": {
+        "category": "skills",
+        "tags": [
+          "technical",
+          "programming",
+          "proficiency"
+        ]
+      }
+    },
+    {
+      "id": "project_book2drive_star",
+      "title": "Book 2 Drive Project - STAR Format",
+      "type": "section",
+      "content": "Situation: University capstone project requiring development of a functional driving lesson booking application for 3-person team. Task: Lead frontend development, design user interface, implement booking system with database integration. Action: Designed responsive UI using HTML, CSS, JavaScript; implemented user authentication system; created MySQL database with proper ERD; developed booking workflow with validation; collaborated using Git for version control; conducted user testing with 20+ volunteers. Result: Successfully delivered fully functional web application on time; received High Distinction (85%); application supported 50+ test bookings; implemented features exceeded initial requirements by 20%; gained experience in full-stack development and team leadership.",
+      "metadata": {
+        "category": "projects",
+        "tags": [
+          "project",
+          "STAR",
+          "leadership",
+          "achievement"
+        ]
+      }
+    },
+    {
+      "id": "project_portfolio_star",
+      "title": "Portfolio Projects - STAR Format",
+      "type": "section",
+      "content": "News Homepage Project - Situation: Needed to demonstrate responsive design skills for portfolio. Task: Create modern, mobile-first news portal. Action: Built responsive layout using HTML5, CSS3, Bootstrap; implemented grid system; optimized for multiple screen sizes; used semantic HTML for accessibility. Result: Achieved 95+ PageSpeed score, fully responsive across devices. Multi-Step Form Project - Situation: Required interactive form demonstration. Task: Build multi-step form with validation and progress tracking. Action: Implemented JavaScript form validation, progress indicators, local storage for data persistence. Result: Created smooth user experience with 0 validation errors in testing.",
+      "metadata": {
+        "category": "projects",
+        "tags": [
+          "portfolio",
+          "STAR",
+          "technical"
+        ]
+      }
+    },
+    {
+      "id": "soft_skills_examples",
+      "title": "Soft Skills with Examples",
+      "type": "section",
+      "content": "Problem Solving: During Book 2 Drive project, identified and resolved database connection issues that were blocking team progress; implemented alternative authentication approach when initial method failed. Communication: Led weekly team meetings for university project; presented technical solutions to non-technical stakeholders; documented code and processes for team knowledge sharing. Time Management: Successfully balanced full-time studies, part-time work, and project deadlines; delivered all assignments on time while maintaining 6.25 GPA. Teamwork: Collaborated effectively in 3-person development team; mentored team members on Git workflow; resolved merge conflicts and maintained code quality standards.",
+      "metadata": {
+        "category": "soft_skills",
+        "tags": [
+          "communication",
+          "problem_solving",
+          "teamwork"
+        ]
+      }
+    },
+    {
+      "id": "career_goals_detailed",
+      "title": "Career Goals - Detailed",
+      "type": "section",
+      "content": "Short-term (6-12 months): Secure junior to mid-level frontend or full-stack developer position; gain commercial experience with React.js and Node.js; contribute to real-world applications that impact users. Medium-term (1-3 years): Develop expertise in modern JavaScript frameworks; take on increasing technical responsibilities; mentor junior developers; contribute to architectural decisions. Long-term (3-5 years): Progress to senior developer or technical lead role; specialize in frontend architecture or full-stack solutions; contribute to open source projects; potentially pursue team leadership opportunities. Continuous learning focus: Advanced React patterns, TypeScript, cloud platforms (AWS/Azure), DevOps practices, UX/UI design principles.",
+      "metadata": {
+        "category": "career",
+        "tags": [
+          "goals",
+          "future",
+          "development"
+        ]
+      }
+    },
+    {
+      "id": "interview_preparation_info",
+      "title": "Interview and Professional Information",
+      "type": "section",
+      "content": "Strengths: Strong foundation in multiple programming languages, proven ability to learn new technologies quickly, experience working in team environments, problem-solving mindset, attention to detail in code quality. Areas for growth: Limited commercial experience, seeking opportunities to work with larger codebases, interested in learning industry best practices, want to gain experience with CI/CD and deployment processes. Why I'm interested in development: Enjoy the creative problem-solving aspect, satisfaction of building functional applications, interested in technology's impact on user experience, motivated by continuous learning opportunities in the field.",
+      "metadata": {
+        "category": "interview",
+        "tags": [
+          "preparation",
+          "strengths",
+          "motivation"
+        ]
+      }
+    }
+  ]
+}

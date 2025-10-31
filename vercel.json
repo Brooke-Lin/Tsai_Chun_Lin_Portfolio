@@ -1,0 +1,13 @@
+{
+  "functions": {
+    "api/digitaltwin.py": {
+      "runtime": "@vercel/python"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/ask",
+      "destination": "/api/digitaltwin"
+    }
+  ]
+}
