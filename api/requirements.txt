@@ -1,1 +1,4 @@
 requests==2.31.0
+upstash-vector==0.4.0
+groq==0.4.1
+python-dotenv==1.0.0

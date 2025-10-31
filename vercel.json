@@ -1,13 +1,18 @@
 {
+  "version": 2,
   "functions": {
     "api/chat.py": {
-      "runtime": "@vercel/python@4.1.0"
+      "runtime": "@vercel/python"
     }
   },
-  "rewrites": [
+  "routes": [
     {
-      "source": "/ask",
-      "destination": "/api/chat"
+      "src": "/ask",
+      "dest": "/api/chat"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/$1"
     }
   ]
 }
