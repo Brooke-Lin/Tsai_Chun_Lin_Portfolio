@@ -94,7 +94,7 @@ chatForm.addEventListener("submit", async (e) => {
   
   try {
     // Determine API URL based on environment
-    const apiUrl = window.location.hostname.includes('vercel.app')
+    const apiUrl = (window.location.hostname.includes('vercel.app') || window.location.hostname.includes('tsai-chun-lin-portfolio'))
       ? '/api/chat'  // Vercel serverless function endpoint
       : 'http://127.0.0.1:8001/ask';  // Local development
     

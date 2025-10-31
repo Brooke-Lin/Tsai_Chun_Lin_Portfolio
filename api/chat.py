@@ -78,16 +78,9 @@ def handler(event, context):
                 })
             }
         
-        # Try to use RAG system, fall back to predefined responses
-        try:
-            # Attempt to import and use the RAG system
-            from digitaltwin_rg import get_rag_response
-            print("RAG system available, using advanced responses")
-            answer = get_rag_response(question)
-        except Exception as rag_error:
-            print(f"RAG system not available: {rag_error}")
-            print("Using fallback response system")
-            answer = get_fallback_response(question)
+        # Use fallback response system (RAG system not available in Vercel deployment)
+        print("Using fallback response system")
+        answer = get_fallback_response(question)
         
         # Return successful response
         return {
