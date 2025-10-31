@@ -1,13 +1,13 @@
 {
   "functions": {
-    "api/digitaltwin.py": {
+    "api/chat.py": {
       "runtime": "@vercel/python@4.1.0"
     }
   },
   "rewrites": [
     {
       "source": "/ask",
-      "destination": "/api/digitaltwin"
+      "destination": "/api/chat"
     }
   ]
 }
