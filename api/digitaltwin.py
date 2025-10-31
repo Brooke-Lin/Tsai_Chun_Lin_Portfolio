@@ -1,4 +1,3 @@
-from vercel_wsgi import handle_request
 from urllib.parse import parse_qs
 import json
 import os
@@ -30,8 +29,8 @@ def get_fallback_response(question: str) -> str:
     
     return "Thank you for your question! I'm a digital twin assistant representing Tsai Chun Lin. I can help you learn about my background, experience, technical skills, projects, and education. Feel free to ask about any aspect of my professional profile!"
 
-def handler(request, context):
-    # Handle CORS
+def handler(event, context):
+    # Set CORS headers
     headers = {
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
@@ -39,19 +38,19 @@ def handler(request, context):
         'Content-Type': 'application/json'
     }
     
-    # Handle OPTIONS request for CORS
-    if request.get('httpMethod') == 'OPTIONS':
+    # Handle preflight requests
+    if event.get('httpMethod') == 'OPTIONS':
         return {
             'statusCode': 200,
             'headers': headers,
-            'body': ''
+            'body': json.dumps({})
         }
     
     try:
         # Get query parameters
-        query_params = request.get('queryStringParameters', {}) or {}
+        query_params = event.get('queryStringParameters') or {}
         
-        if 'question' not in query_params:
+        if not query_params or 'question' not in query_params:
             return {
                 'statusCode': 400,
                 'headers': headers,
@@ -62,7 +61,7 @@ def handler(request, context):
         
         # Try to use RAG if available, otherwise use fallback
         try:
-            # Import RAG function
+            # Try to import and use RAG function
             from digitaltwin_rg import get_rag_response
             answer = get_rag_response(question)
         except Exception as e:
