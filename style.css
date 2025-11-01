@@ -16,6 +16,10 @@ body {
     transform: translateY(-3px) scale(1.1); /* lift and zoom */
 }
 
+.bg-effect {
+    background-attachment: fixed;
+}
+
 .bg-img-1 {
     background-image: url(Images/Bg-img-1.jpg);
     height: 100vh;
