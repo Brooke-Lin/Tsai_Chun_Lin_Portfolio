@@ -1,3 +1,7 @@
+html {
+    scroll-padding-top: 70px; /* Add extra space for fixed navbar */
+}
+
 body {
     background-color: white;
     padding-top: 60px;
