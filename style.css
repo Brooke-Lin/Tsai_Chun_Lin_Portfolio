@@ -1,27 +1,114 @@
+/* Add extra space for fixed navbar */
 html {
-    scroll-padding-top: 70px; /* Add extra space for fixed navbar */
+    scroll-padding-top: 55px; 
 }
 
 body {
     background-color: white;
-    padding-top: 60px;
+}
+
+
+
+/* Custom Burger Menu Styles */
+#burger-container {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#burger {
+    cursor: pointer;
+    display: block;
+    width: 30px;
+}
+
+#burger span {
+    background-color: #000;
+    display: block;
+    width: 25px;
+    height: 3px;
+    margin: 5px 0;
+    position: relative;
+    top: 0;
+    transition: all 300ms ease-in-out;
+}
+
+#burger-container.open span:nth-child(2) {
+    width: 0;
+    opacity: 0;
+}
+
+#burger-container.open span:nth-child(1) {
+    transform: rotate(-45deg);
+    top: 8px;
+}
+
+#burger-container.open span:nth-child(3) {
+    transform: rotate(45deg);
+    top: -8px;
+}
+
+
+
+/* Remove default Bootstrap button styles for navbar toggler */
+.navbar-toggler {
+    border: none !important;
+    padding: 4px 8px !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    display: flex !important;
+    align-items: center !important;
+}
+
+.navbar-toggler:focus {
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+/* Hide burger icon on desktop (Bootstrap lg breakpoint and above) */
+@media (min-width: 992px) {
+    .navbar-toggler {
+        display: none !important;
+    }
+}
+
+/* Ensure navbar brand and toggler are aligned */
+.navbar-brand {
+    display: flex !important;
+    align-items: center !important;
+    margin-bottom: 0 !important;
+}
+
+.navbar-brand h2 {
+    margin: 0 !important;
+    line-height: 1 !important;
 }
 
 .nav-links a {
-    transition: all 0.3s ease; /* smooth transition */
+    transition: all 0.3s ease; 
     cursor: pointer;
     transform: translateY(0);
-    display: inline-block; /* <-- make transform work */
+    display: inline-block; 
 }
 
-/* Hover effect */
 .nav-links a:hover{
-    color: #898989 !important; /* changes text color */
-    transform: translateY(-3px) scale(1.1); /* lift and zoom */
+    color: #898989 !important; 
+    transform: translateY(-3px) scale(1.1);
 }
+
+
 
 .bg-effect {
     background-attachment: fixed;
+}
+/* Disable fixed background on mobile for better performance */
+@media (max-width: 768px) {
+    .bg-effect {
+        background-attachment: scroll;
+    }
 }
 
 .bg-img-1 {
@@ -77,7 +164,7 @@ body {
   bottom: 0;
   left: 0;
   right: 0;
-  background-color: rgba(0, 0, 0, 0.6); /* semi-transparent dark background */
+  background-color: rgba(0, 0, 0, 0.6); 
   opacity: 0;
   transition: opacity 0.5s ease;
   display: flex;
@@ -96,7 +183,6 @@ body {
   transition: all 0.5s ease;
 }
 
-/* Hover effect */
 .card-effects-container:hover img {
   transform: scale(1.1);
   filter: brightness(70%);
@@ -124,18 +210,24 @@ body {
     padding: 15px 25px;
     font-size: 20px;
     border-radius: 15px;
-    transition: all 0.1s ease; /* smooth animation */
+    transition: all 0.1s ease;
+    display: inline-flex;
+    align-items: center;
+}
+
+.custom-pressed-btn svg {
+    margin-left: 0.5rem;
 }
 
 .custom-pressed-btn:hover {
-    background-color: #898989; /* slightly darker Bootstrap secondary */
+    background-color: #898989; 
     transform: translateY(-3px);
 }
 
 .custom-pressed-btn:active {
     background-color: #898989;
-    box-shadow: 0 3px #898989; /* smaller shadow to look “pressed” */
-    transform: translateY(3px); /* downward movement */
+    box-shadow: 0 3px #898989; 
+    transform: translateY(3px); 
 }
 
 
@@ -156,42 +248,106 @@ body {
     transform: translateY(-3px);
 }
 
+/* ECAs Carousel Responsive Styles */
+#carouselExampleAutoplaying {
+    max-width: 700px;
+}
+
+/* Using !important here is justified to override inline styles */
+#carouselExampleAutoplaying .carousel-item img {
+    height: 400px !important;
+    object-fit: contain;
+}
+
+/* Tablet responsiveness */
+@media (max-width: 992px) {
+    #carouselExampleAutoplaying {
+        max-width: 600px;
+    }
+    
+    #carouselExampleAutoplaying .carousel-item img {
+        height: 350px !important;
+    }
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    #carouselExampleAutoplaying {
+        max-width: 100%;
+        margin: 0 15px;
+    }
+    
+    #carouselExampleAutoplaying .carousel-item img {
+        height: 280px !important;
+    }
+    
+    .carousel-btn {
+        font-size: 16px;
+        padding: 8px 16px;
+    }
+}
+
+/* Small mobile devices */
+@media (max-width: 576px) {
+    #carouselExampleAutoplaying {
+        margin: 0 10px;
+    }
+    
+    #carouselExampleAutoplaying .carousel-item img {
+        height: 220px !important;
+    }
+    
+    .carousel-btn {
+        font-size: 14px;
+        padding: 6px 12px;
+    }
+}
+
+/* Very small screens */
+@media (max-width: 480px) {
+    #carouselExampleAutoplaying .carousel-item img {
+        height: 180px !important;
+    }
+    
+    .carousel-btn {
+        font-size: 12px;
+        padding: 4px 8px;
+        margin: 0 5px;
+    }
+}
+
 
 .footer-color{
     background-color: #3b3b3b;
 }
 
 .footer-links a {
-    transition: all 0.3s ease; /* smooth transition */
+    transition: all 0.3s ease; 
     cursor: pointer;
     transform: translateY(0);
-    color: white; /* initial color */
-    display: inline-block; /* <-- make transform work */
+    color: white; 
+    display: inline-block; 
 }
 
 /* Hover effect */
 .footer-links a:hover{
-    color: black !important; /* changes text color */
-    transform: translateY(-3px) scale(1.1); /* lift and zoom */
+    color: black !important; 
+    transform: translateY(-3px) scale(1.1);
 }
 
 
 /* Icon */
 .footer-icons a svg {
-    transition: all 0.3s ease; /* smooth transition */
+    transition: all 0.3s ease;
     cursor: pointer;
     transform: translateY(0);
 }
 
 /* Hover effect */
 .footer-icons a:hover svg {
-    fill: black;        /* change color on hover (Bootstrap primary) */
-    transform: translateY(-3px) scale(1.1); /* small lift and zoom */
+    fill: black;     
+    transform: translateY(-3px) scale(1.1); 
 }
-
-
-
-
 
 
 /* Floating Chat Section (hidden by default) */
@@ -244,6 +400,49 @@ body {
     border-radius: 6px;
     padding: 10px;
     overflow-y: auto;
+}
+
+/* Suggested questions styling */
+.suggested-questions {
+    margin: 10px 0;
+    padding: 12px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+}
+
+.suggested-questions p {
+    margin: 0 0 10px 0;
+    font-size: 0.9em;
+    color: #495057;
+    font-weight: 600;
+}
+
+.suggestion-btn {
+    display: block;
+    width: 100%;
+    margin: 6px 0;
+    padding: 8px 12px;
+    background-color: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    color: #495057;
+    text-align: left;
+    cursor: pointer;
+    font-size: 0.85em;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.suggestion-btn:hover {
+    background-color: #e9ecef;
+    border-color: #adb5bd;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+.suggestion-btn:active {
+    transform: translateY(0);
 }
 
 /* Input area */
