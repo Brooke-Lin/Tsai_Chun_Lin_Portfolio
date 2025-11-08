@@ -1,8 +1,79 @@
 from http.server import BaseHTTPRequestHandler
 import json
 import urllib.parse
+import os
 
 
+def load_digitaltwin_data():
+    """Load the detailed profile data from digitaltwin.json"""
+    try:
+        # Try to load from the same directory as this script
+        script_dir = os.path.dirname(__file__)
+        json_path = os.path.join(script_dir, 'digitaltwin.json')
+        
+        with open(json_path, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    except Exception as e:
+        print(f"Error loading digitaltwin.json: {e}")
+        return None
+
+def smart_search_response(question: str) -> str:
+    """Search through digitaltwin.json content for relevant answers"""
+    data = load_digitaltwin_data()
+    if not data:
+        return get_fallback_response(question)
+    
+    question_lower = question.lower()
+    content_chunks = data.get("content_chunks", [])
+    
+    # Find relevant content chunks based on question keywords
+    relevant_chunks = []
+    
+    for chunk in content_chunks:
+        title = chunk.get("title", "").lower()
+        content = chunk.get("content", "").lower()
+        category = chunk.get("metadata", {}).get("category", "").lower()
+        tags = [tag.lower() for tag in chunk.get("metadata", {}).get("tags", [])]
+        
+        # Check if question matches this chunk
+        if (any(keyword in title for keyword in question_lower.split()) or
+            any(keyword in content for keyword in question_lower.split()) or
+            any(keyword in category for keyword in question_lower.split()) or
+            any(keyword in " ".join(tags) for keyword in question_lower.split())):
+            
+            relevant_chunks.append({
+                "title": chunk.get("title", ""),
+                "content": chunk.get("content", ""),
+                "category": category,
+                "relevance_score": calculate_relevance_score(question_lower, chunk)
+            })
+    
+    # Sort by relevance and return best match
+    if relevant_chunks:
+        relevant_chunks.sort(key=lambda x: x["relevance_score"], reverse=True)
+        best_match = relevant_chunks[0]
+        return f"{best_match['content']}"
+    
+    return get_fallback_response(question)
+
+def calculate_relevance_score(question: str, chunk: dict) -> int:
+    """Calculate how relevant a chunk is to the question"""
+    score = 0
+    question_words = set(question.lower().split())
+    
+    title = chunk.get("title", "").lower()
+    content = chunk.get("content", "").lower()
+    category = chunk.get("metadata", {}).get("category", "").lower()
+    tags = " ".join(chunk.get("metadata", {}).get("tags", [])).lower()
+    
+    # Score based on matches in different fields
+    for word in question_words:
+        if word in title: score += 10  # Title matches are most important
+        if word in category: score += 8  # Category matches are very important
+        if word in tags: score += 5     # Tag matches are important
+        if word in content: score += 2  # Content matches are good
+    
+    return score
 
 def get_fallback_response(question: str) -> str:
     """Enhanced fallback responses based on digitaltwin.json content"""
@@ -85,8 +156,8 @@ class handler(BaseHTTPRequestHandler):
                 self.wfile.write(json.dumps(response).encode())
                 return
             
-            # Get response using enhanced fallback system
-            answer = get_fallback_response(question)
+            # Get response using smart search system
+            answer = smart_search_response(question)
             
             response = {
                 "answer": answer,
