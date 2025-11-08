@@ -2,19 +2,51 @@
   "suggestions": [
     {
       "question": "What is your education background?",
-      "answer": "I have a Master of Applied Information Technology from Victoria University (2024-2025) with a GPA of 6.25. My coursework included Advanced Web Development, Database Systems, Software Engineering, Cloud Computing, and Cybersecurity. I also have a Master of Information Systems & Advertising from University of Queensland (2021-2023) with a GPA of 5.37, where I worked on database design and system analysis projects."
+      "category": "education"
     },
     {
       "question": "Tell me about your recent projects?",
-      "answer": "My most recent major project is Book 2 Drive - a driving lesson booking application I led as part of a 3-person university team. I designed the responsive UI using HTML, CSS, JavaScript, and PHP, implemented user authentication, and created a MySQL database. I've also built several portfolio projects including a responsive News Homepage and an Interactive Multi-Step Form with validation, both showcasing my frontend development skills."
+      "category": "projects"
     },
     {
-      "question": "Tell me about your working experience?",
-      "answer": "I’m currently working at Kitchen Montague, where I focus on providing excellent customer service, managing orders efficiently, and maintaining a high standard of teamwork in a fast-paced environment. Previously, I worked as a Technical Support Intern at Ben Curtains (Jan 2025 – Apr 2025), where I organized website content, updated product images using WordPress, and assisted with technical and sales-related tasks. These experiences have helped me develop strong communication, problem-solving, and time management skills."
+      "question": "What is your working experience?",
+      "category": "experience"
     },
     {
       "question": "What are your technical skills?",
-      "answer": "I’m familiar with using HTML, CSS, JavaScript, and Bootstrap to develop responsive web applications. Recently, I started learning PHP while working on the Book 2 Drive project, where I applied it to handle backend functionality and database operations. I also have some backend experience from my analysis project at the University of Queensland, where I worked on database design and data processing tasks. In addition, I’m comfortable using Git and GitHub for version control."
+      "category": "skills"
+    },
+    {
+      "question": "What are your career goals?",
+      "category": "career"
+    },
+    {
+      "question": "Tell me about the Book 2 Drive project?",
+      "category": "projects"
+    },
+    {
+      "question": "What salary range are you looking for?",
+      "category": "employment"
+    },
+    {
+      "question": "Are you available for relocation?",
+      "category": "employment"
+    },
+    {
+      "question": "What programming languages do you know?",
+      "category": "skills"
+    },
+    {
+      "question": "Tell me about your problem-solving approach?",
+      "category": "soft_skills"
+    },
+    {
+      "question": "What makes you interested in web development?",
+      "category": "motivation"
+    },
+    {
+      "question": "Do you have experience with databases?",
+      "category": "skills"
     }
   ]
 }

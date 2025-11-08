@@ -91,24 +91,40 @@ const chatForm = document.getElementById("chat-form");
 const chatInput = document.getElementById("chat-input");
 const chatBox = document.getElementById("chat-box");
 
-// Predefined suggestions and answers
+// Predefined suggestion questions (answers will come from AI)
 const chatSuggestions = {
   "suggestions": [
     {
       "question": "What is your education background?",
-      "answer": "I have a Master of Applied Information Technology from Victoria University (2024-2025) with a GPA of 6.25. My coursework included Advanced Web Development, Database Systems, Software Engineering, Cloud Computing, and Cybersecurity. I also have a Master of Information Systems & Advertising from University of Queensland (2021-2023) with a GPA of 5.37, where I worked on database design and system analysis projects."
+      "category": "education"
     },
     {
       "question": "Tell me about your recent projects?",
-      "answer": "My most recent major project is Book 2 Drive - a driving lesson booking application I led as part of a 3-person university team. I designed the responsive UI using HTML, CSS, JavaScript, and PHP, implemented user authentication, and created a MySQL database. I've also built several portfolio projects including a responsive News Homepage and an Interactive Multi-Step Form with validation, both showcasing my frontend development skills."
+      "category": "projects"
     },
     {
-      "question": "Tell me about your working experience?",
-      "answer": "I’m currently working at Kitchen Montague, where I focus on providing excellent customer service, managing orders efficiently, and maintaining a high standard of teamwork in a fast-paced environment. Previously, I worked as a Technical Support Intern at Ben Curtains (Jan 2025 – Apr 2025), where I organized website content, updated product images using WordPress, and assisted with technical and sales-related tasks. These experiences have helped me develop strong communication, problem-solving, and time management skills."
+      "question": "What is your working experience?",
+      "category": "experience"
     },
     {
       "question": "What are your technical skills?",
-      "answer": "I’m familiar with using HTML, CSS, JavaScript, and Bootstrap to develop responsive web applications. Recently, I started learning PHP while working on the Book 2 Drive project, where I applied it to handle backend functionality and database operations. I also have some backend experience from my analysis project at the University of Queensland, where I worked on database design and data processing tasks. In addition, I’m comfortable using Git and GitHub for version control."
+      "category": "skills"
+    },
+    {
+      "question": "What are your career goals?",
+      "category": "career"
+    },
+    {
+      "question": "Tell me about the Book 2 Drive project?",
+      "category": "projects"
+    },
+    {
+      "question": "What salary range are you looking for?",
+      "category": "employment"
+    },
+    {
+      "question": "What programming languages do you know?",
+      "category": "skills"
     }
   ]
 };
@@ -126,7 +142,7 @@ function createSuggestedQuestions() {
     const button = document.createElement('button');
     button.className = 'suggestion-btn';
     button.textContent = suggestion.question;
-    button.addEventListener('click', () => handleSuggestionClick(suggestion.question, suggestion.answer));
+    button.addEventListener('click', () => handleSuggestionClick(suggestion.question));
     suggestionsContainer.appendChild(button);
   });
   
@@ -134,17 +150,67 @@ function createSuggestedQuestions() {
 }
 
 // Function to handle suggestion clicks
-function handleSuggestionClick(question, answer) {
+async function handleSuggestionClick(question) {
   // Add user message
   chatBox.innerHTML += `<p><b>You:</b> ${question}</p>`;
-  
-  // Add AI response
-  chatBox.innerHTML += `<p><b>Digital Twin:</b> ${answer}</p>`;
   
   // Remove suggestions after first use
   const suggestionsElement = chatBox.querySelector('.suggested-questions');
   if (suggestionsElement) {
     suggestionsElement.remove();
+  }
+  
+  // Handle different environments
+  if (isGitHubPages) {
+    chatBox.innerHTML += `<p><b>Digital Twin:</b> <em style="color: #666;">Thanks for your interest! This AI chat feature is currently available when running with the backend server. For now, you can view my portfolio and download my resume to learn more about my experience.</em></p>`;
+    chatBox.scrollTop = chatBox.scrollHeight;
+    return;
+  }
+  
+  // Show loading indicator
+  const loadingMsg = document.createElement('p');
+  loadingMsg.innerHTML = `<b>Digital Twin:</b> <em class="typing-indicator">Thinking<span class="dots">...</span></em>`;
+  chatBox.appendChild(loadingMsg);
+  chatBox.scrollTop = chatBox.scrollHeight;
+  
+  try {
+    const apiUrl = '/api/chat';
+    const response = await fetch(`${apiUrl}?question=${encodeURIComponent(question)}`, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+      }
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    
+    // Remove loading indicator
+    loadingMsg.remove();
+    
+    // Add AI response
+    const responseMsg = document.createElement('p');
+    responseMsg.innerHTML = `<b>Digital Twin:</b> ${data.answer}`;
+    
+    if (data.source === 'rag_system') {
+      responseMsg.innerHTML += ` <small style="color: #888;">(AI-powered response)</small>`;
+    }
+    
+    chatBox.appendChild(responseMsg);
+    
+  } catch (error) {
+    console.error('Chat error:', error);
+    
+    // Remove loading indicator
+    loadingMsg.remove();
+    
+    // Show error message
+    const errorMsg = document.createElement('p');
+    errorMsg.innerHTML = `<b>Digital Twin:</b> <em style="color: #e74c3c;">I'm having trouble accessing my knowledge base. Please try asking in the chat box below.</em>`;
+    chatBox.appendChild(errorMsg);
   }
   
   // Auto scroll to bottom
@@ -155,11 +221,20 @@ function handleSuggestionClick(question, answer) {
 const suggestedQuestions = createSuggestedQuestions();
 chatBox.appendChild(suggestedQuestions);
 
+// Check if running on GitHub Pages (static hosting without backend)
+const isGitHubPages = window.location.hostname.includes('github.io');
+
 chatForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   const question = chatInput.value.trim();
   
   if (!question) return; // Don't send empty messages
+  
+  // Remove suggested questions after first interaction
+  const suggestionsElement = chatBox.querySelector('.suggested-questions');
+  if (suggestionsElement) {
+    suggestionsElement.remove();
+  }
   
   // Add user message
   chatBox.innerHTML += `<p><b>You:</b> ${question}</p>`;
@@ -173,17 +248,26 @@ chatForm.addEventListener("submit", async (e) => {
     return;
   }
   
-  // Show loading indicator
-  chatBox.innerHTML += `<p><b>Digital Twin:</b> <em>Thinking...</em></p>`;
-  chatBox.scrollTop = chatBox.scrollHeight; // Auto scroll to bottom
+  // Show loading indicator with typing effect
+  const loadingMsg = document.createElement('p');
+  loadingMsg.innerHTML = `<b>Digital Twin:</b> <em class="typing-indicator">Thinking<span class="dots">...</span></em>`;
+  chatBox.appendChild(loadingMsg);
+  chatBox.scrollTop = chatBox.scrollHeight;
   
   try {
     // Determine API URL based on environment
-    const apiUrl = (window.location.hostname.includes('vercel.app') || window.location.hostname.includes('tsai-chun-lin-portfolio'))
-      ? '/api/chat'  // Vercel serverless function endpoint
-      : 'http://127.0.0.1:8001/ask';  // Local development
+    const apiUrl = (window.location.hostname.includes('vercel.app') || 
+                   window.location.hostname.includes('tsai-chun-lin-portfolio') ||
+                   window.location.hostname.includes('netlify.app'))
+      ? '/api/chat'  // Vercel/Netlify serverless function endpoint
+      : '/api/chat'; // Default to serverless function
     
-    const response = await fetch(`${apiUrl}?question=${encodeURIComponent(question)}`);
+    const response = await fetch(`${apiUrl}?question=${encodeURIComponent(question)}`, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+      }
+    });
     
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -192,23 +276,29 @@ chatForm.addEventListener("submit", async (e) => {
     const data = await response.json();
     
     // Remove loading indicator
-    const messages = chatBox.children;
-    const lastMessage = messages[messages.length - 1];
-    lastMessage.remove();
+    loadingMsg.remove();
     
-    // Add AI response
-    chatBox.innerHTML += `<p><b>Digital Twin:</b> ${data.answer}</p>`;
+    // Add AI response with typing effect
+    const responseMsg = document.createElement('p');
+    responseMsg.innerHTML = `<b>Digital Twin:</b> ${data.answer}`;
+    
+    // Add source indicator if available
+    if (data.source === 'rag_system') {
+      responseMsg.innerHTML += ` <small style="color: #888;">(AI-powered response)</small>`;
+    }
+    
+    chatBox.appendChild(responseMsg);
     
   } catch (error) {
     console.error('Chat error:', error);
     
     // Remove loading indicator
-    const messages = chatBox.children;
-    const lastMessage = messages[messages.length - 1];
-    lastMessage.remove();
+    loadingMsg.remove();
     
     // Show error message
-    chatBox.innerHTML += `<p><b>Digital Twin:</b> <em style="color: red;">Sorry, I'm having trouble connecting. Please try again in a moment.</em></p>`;
+    const errorMsg = document.createElement('p');
+    errorMsg.innerHTML = `<b>Digital Twin:</b> <em style="color: #e74c3c;">I apologize, but I'm having trouble connecting to my knowledge base right now. Please try again in a moment, or feel free to explore my portfolio for more information about my background.</em>`;
+    chatBox.appendChild(errorMsg);
   }
   
   // Auto scroll to bottom

@@ -548,3 +548,14 @@ body {
         line-height: 1.3;
     }
 }
+
+/* Typing indicator animation */
+.typing-indicator .dots {
+    animation: typing 1.4s infinite;
+}
+
+@keyframes typing {
+    0%, 20% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}

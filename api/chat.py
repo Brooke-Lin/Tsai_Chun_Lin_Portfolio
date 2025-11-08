@@ -2,32 +2,54 @@ from http.server import BaseHTTPRequestHandler
 import json
 import urllib.parse
 
+
+
 def get_fallback_response(question: str) -> str:
-    """Enhanced fallback responses with better keyword matching"""
+    """Enhanced fallback responses based on digitaltwin.json content"""
+    
+    # More comprehensive responses based on your actual profile
     fallback_responses = {
-        "hello": "Hello! I'm Tsai Chun Lin's digital twin assistant. I'm here to help you learn about my background, skills, and experience. What would you like to know?",
-        "experience": "I have experience in web development, particularly with React, Python, and full-stack applications. I recently graduated with a Master of Applied Information Technology from Victoria University, where I developed strong programming and problem-solving skills.",
-        "skills": "My technical skills include Python, JavaScript, React, FastAPI, web development, AI/ML technologies, and database management. I'm passionate about creating user-friendly applications and have experience with both frontend and backend development.",
-        "projects": "I've worked on various projects including interactive portfolio websites, multi-step forms, rating components, todo applications, and AI-powered digital twin systems. You can see examples of my work in the portfolio section.",
-        "education": "I hold a Master of Applied Information Technology from Victoria University. During my studies, I focused on web development, programming fundamentals, and modern technology frameworks.",
-        "background": "I'm a recent graduate passionate about technology and web development. I enjoy creating engaging user experiences and have a strong foundation in both frontend and backend technologies.",
-        "contact": "You can reach me through the contact information provided in my portfolio. I'm always interested in discussing new opportunities and technology projects.",
-        "about": "I'm Tsai Chun Lin, a recent graduate with a Master of Applied Information Technology from Victoria University. I'm passionate about web development and creating user-friendly applications."
+        "hello": "Hello! I'm Tsai Chun Lin. I'm a recent graduate with a Master of Applied Information Technology from Victoria University. I'm passionate about frontend and full-stack development. What would you like to know about my background?",
+        
+        "education": "I have a Master of Applied Information Technology from Victoria University (2024-2025) with a GPA of 6.25. My coursework included Advanced Web Development, Database Systems, Software Engineering, Cloud Computing, and Cybersecurity. I also have a Master of Information Systems & Advertising from University of Queensland (2021-2023) with a GPA of 5.37.",
+        
+        "experience": "I currently work part-time as a Barista at Kitchen Montague, which has helped me develop excellent customer service and time management skills. I also completed a Technical Support Internship at Ben Curtains (Jan 2025 - Apr 2025), where I organized website content, managed images via WordPress, and improved website loading speed by 30%.",
+        
+        "skills": "My technical skills include Python (5 years, advanced level), JavaScript (1 year, intermediate), and PHP (6 months, beginner-intermediate). I'm proficient in HTML5, CSS3, Bootstrap for responsive design, and MySQL for database management. I use Git/GitHub for version control and I'm currently learning React.js and Node.js.",
+        
+        "projects": "My main project is Book 2 Drive - a driving lesson booking application where I led frontend development for a 3-person team. I designed responsive UI, implemented user authentication, and created MySQL database with proper ERD. The project received a High Distinction (85%) and supported 50+ test bookings. I've also built portfolio projects including responsive news homepages and multi-step forms.",
+        
+        "salary": "I'm looking for an entry to mid-level developer role with a salary range of $65,000 - $85,000 AUD annually. I'm open to Melbourne, Sydney, or Brisbane locations and willing to relocate within Australia. I'm available for hybrid work arrangements and can start immediately or with 2 weeks notice.",
+        
+        "goals": "My short-term goal is to secure a junior to mid-level frontend or full-stack developer position where I can gain commercial experience with React.js and Node.js. Long-term, I want to progress to senior developer or technical lead roles, contribute to architectural decisions, and potentially pursue team leadership opportunities.",
+        
+        "about": "I'm Tsai Chun Lin, passionate about creating engaging web applications and solving problems through code. I enjoy the creative problem-solving aspect of development and am motivated by technology's impact on user experience. I have strong foundations in multiple programming languages and proven ability to learn new technologies quickly."
     }
     
     question_lower = question.lower()
     
     # Check for greetings
-    greetings = ["hello", "hi", "hey", "greetings", "how are you"]
+    greetings = ["hello", "hi", "hey", "greetings", "how are you", "who are you"]
     if any(greeting in question_lower for greeting in greetings):
         return fallback_responses["hello"]
     
-    # Check for specific topics
-    for key, response in fallback_responses.items():
-        if key in question_lower or any(word in question_lower for word in key.split()):
-            return response
+    # Check for specific topics with keyword matching
+    topic_keywords = {
+        "education": ["education", "university", "study", "degree", "gpa", "coursework", "graduate"],
+        "experience": ["experience", "work", "job", "internship", "barista", "ben curtains", "kitchen montague"],
+        "skills": ["skills", "programming", "languages", "python", "javascript", "php", "html", "css", "technical"],
+        "projects": ["projects", "book 2 drive", "portfolio", "application", "website", "development"],
+        "salary": ["salary", "pay", "money", "compensation", "range", "location", "melbourne", "sydney", "brisbane"],
+        "goals": ["goals", "future", "career", "objectives", "plans", "ambitions"],
+        "about": ["about", "background", "profile", "bio", "yourself", "tell me"]
+    }
     
-    return "Thank you for your question! I'm a digital twin assistant representing Tsai Chun Lin. I can help you learn about my background, experience, technical skills, projects, and education. Feel free to ask about any aspect of my professional profile!"
+    # Find the best matching topic
+    for topic, keywords in topic_keywords.items():
+        if any(keyword in question_lower for keyword in keywords):
+            return fallback_responses.get(topic, fallback_responses["about"])
+    
+    return "Thank you for your question! I'm Tsai Chun Lin, a frontend/full-stack developer. Feel free to ask me about my education, work experience, technical skills, projects like Book 2 Drive, career goals, or salary expectations. I'm always happy to discuss my background!"
 
 class handler(BaseHTTPRequestHandler):
     def do_GET(self):
@@ -63,7 +85,7 @@ class handler(BaseHTTPRequestHandler):
                 self.wfile.write(json.dumps(response).encode())
                 return
             
-            # Get response using fallback system
+            # Get response using enhanced fallback system
             answer = get_fallback_response(question)
             
             response = {

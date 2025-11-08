@@ -1,4 +1,5 @@
-requests==2.31.0
-upstash-vector==0.4.0
-groq==0.4.1
-python-dotenv==1.0.0
+# No external dependencies needed for simplified chat API
+# Uses only standard Python libraries:
+# - json (built-in)
+# - urllib.parse (built-in) 
+# - http.server.BaseHTTPRequestHandler (built-in)
