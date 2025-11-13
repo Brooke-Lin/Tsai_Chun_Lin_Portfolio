@@ -2,6 +2,56 @@ from http.server import BaseHTTPRequestHandler
 import json
 import urllib.parse
 import os
+import time
+from collections import defaultdict
+
+# Simple in-memory cache to prevent duplicate requests
+request_cache = {}
+rate_limit_cache = defaultdict(list)
+RATE_LIMIT_WINDOW = 60  # 1 minute
+RATE_LIMIT_REQUESTS = 10  # Max 10 requests per minute per IP
+
+def check_rate_limit(ip_address):
+    """Check if IP has exceeded rate limit"""
+    current_time = time.time()
+    
+    # Clean old entries
+    rate_limit_cache[ip_address] = [
+        timestamp for timestamp in rate_limit_cache[ip_address]
+        if current_time - timestamp < RATE_LIMIT_WINDOW
+    ]
+    
+    # Check if rate limit exceeded
+    if len(rate_limit_cache[ip_address]) >= RATE_LIMIT_REQUESTS:
+        return False
+    
+    # Add current request
+    rate_limit_cache[ip_address].append(current_time)
+    return True
+
+def get_cache_key(question, request_id=None):
+    """Generate cache key for question"""
+    # Normalize question for caching
+    normalized_question = question.lower().strip()
+    if request_id:
+        return f"{normalized_question}_{request_id}"
+    return normalized_question
+
+def get_cached_response(cache_key):
+    """Get cached response if available and recent"""
+    if cache_key in request_cache:
+        cached_time, cached_response = request_cache[cache_key]
+        # Cache expires after 5 minutes
+        if time.time() - cached_time < 300:
+            return cached_response
+        else:
+            # Remove expired cache entry
+            del request_cache[cache_key]
+    return None
+
+def cache_response(cache_key, response):
+    """Cache response for future use"""
+    request_cache[cache_key] = (time.time(), response)
 
 
 def load_digitaltwin_data():
@@ -124,6 +174,21 @@ def get_fallback_response(question: str) -> str:
 
 class handler(BaseHTTPRequestHandler):
     def do_GET(self):
+        # Get client IP address
+        client_ip = self.headers.get('X-Forwarded-For', self.client_address[0])
+        
+        # Check rate limiting
+        if not check_rate_limit(client_ip):
+            self.send_response(429)  # Too Many Requests
+            self.send_header('Content-Type', 'application/json')
+            self.end_headers()
+            response = {
+                "error": "Rate limit exceeded",
+                "answer": "Please wait a moment before sending another message. This helps me provide better responses."
+            }
+            self.wfile.write(json.dumps(response).encode())
+            return
+        
         # Parse URL and query parameters
         parsed_url = urllib.parse.urlparse(self.path)
         query_params = urllib.parse.parse_qs(parsed_url.query)
@@ -147,6 +212,7 @@ class handler(BaseHTTPRequestHandler):
                 return
             
             question = query_params['question'][0].strip()
+            request_id = query_params.get('rid', [None])[0]  # Get request ID if provided
             
             if not question:
                 response = {
@@ -156,17 +222,32 @@ class handler(BaseHTTPRequestHandler):
                 self.wfile.write(json.dumps(response).encode())
                 return
             
+            # Check for cached response
+            cache_key = get_cache_key(question, request_id)
+            cached_response = get_cached_response(cache_key)
+            
+            if cached_response:
+                print(f"Returning cached response for: {question}")
+                self.wfile.write(json.dumps(cached_response).encode())
+                return
+            
             # Get response using smart search system
             answer = smart_search_response(question)
             
             response = {
                 "answer": answer,
-                "source": "digital_twin_assistant"
+                "source": "digital_twin_assistant",
+                "request_id": request_id
             }
             
+            # Cache the response
+            cache_response(cache_key, response)
+            
+            print(f"Generated new response for: {question}")
             self.wfile.write(json.dumps(response).encode())
             
         except Exception as e:
+            print(f"Error processing request: {e}")
             response = {
                 "error": "Internal server error",
                 "answer": "I apologize, but I'm experiencing technical difficulties. Please try again in a moment, or feel free to explore my portfolio and download my resume for more information about my background."

@@ -91,6 +91,32 @@ const chatForm = document.getElementById("chat-form");
 const chatInput = document.getElementById("chat-input");
 const chatBox = document.getElementById("chat-box");
 
+// Prevent multiple concurrent requests
+let isProcessing = false;
+let lastRequestTime = 0;
+const REQUEST_DELAY = 1000; // Minimum 1 second between requests
+let lastResponseContent = ""; // Track last response to prevent duplicates
+
+// Debounce function to prevent rapid requests
+function debounce(func, delay) {
+  let timeoutId;
+  return function (...args) {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => func.apply(this, args), delay);
+  };
+}
+
+// Function to check if response is duplicate
+function isDuplicateResponse(response) {
+  const normalizedResponse = response.trim().toLowerCase();
+  if (normalizedResponse === lastResponseContent) {
+    console.log('Duplicate response detected, skipping display');
+    return true;
+  }
+  lastResponseContent = normalizedResponse;
+  return false;
+}
+
 // Predefined suggestion questions (answers will come from AI)
 const chatSuggestions = {
   "suggestions": [
@@ -151,70 +177,110 @@ function createSuggestedQuestions() {
 
 // Function to handle suggestion clicks
 async function handleSuggestionClick(question) {
-  // Add user message
-  chatBox.innerHTML += `<p><b>You:</b> ${question}</p>`;
-  
-  // Remove suggestions after first use
-  const suggestionsElement = chatBox.querySelector('.suggested-questions');
-  if (suggestionsElement) {
-    suggestionsElement.remove();
-  }
-  
-  // Handle different environments
-  if (isGitHubPages) {
-    chatBox.innerHTML += `<p><b>Digital Twin:</b> <em style="color: #666;">Thanks for your interest! This AI chat feature is currently available when running with the backend server. For now, you can view my portfolio and download my resume to learn more about my experience.</em></p>`;
-    chatBox.scrollTop = chatBox.scrollHeight;
+  // Prevent duplicate requests
+  if (isProcessing) {
+    console.log('Request already in progress, ignoring duplicate click');
     return;
   }
   
-  // Show loading indicator
-  const loadingMsg = document.createElement('p');
-  loadingMsg.innerHTML = `<b>Digital Twin:</b> <em class="typing-indicator">Thinking<span class="dots">...</span></em>`;
-  chatBox.appendChild(loadingMsg);
-  chatBox.scrollTop = chatBox.scrollHeight;
+  // Rate limiting - prevent rapid requests
+  const currentTime = Date.now();
+  if (currentTime - lastRequestTime < REQUEST_DELAY) {
+    console.log('Rate limit: Please wait before making another request');
+    return;
+  }
+  lastRequestTime = currentTime;
+  
+  isProcessing = true;
   
   try {
-    const apiUrl = '/api/chat';
-    const response = await fetch(`${apiUrl}?question=${encodeURIComponent(question)}`, {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-      }
-    });
+    // Clear any existing input
+    chatInput.value = "";
     
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+    // Add user message
+    const userMsg = document.createElement('p');
+    userMsg.innerHTML = `<b>You:</b> ${question}`;
+    chatBox.appendChild(userMsg);
+    
+    // Remove suggestions after first use
+    const suggestionsElement = chatBox.querySelector('.suggested-questions');
+    if (suggestionsElement) {
+      suggestionsElement.remove();
     }
     
-    const data = await response.json();
-    
-    // Remove loading indicator
-    loadingMsg.remove();
-    
-    // Add AI response
-    const responseMsg = document.createElement('p');
-    responseMsg.innerHTML = `<b>Digital Twin:</b> ${data.answer}`;
-    
-    if (data.source === 'rag_system') {
-      responseMsg.innerHTML += ` <small style="color: #888;">(AI-powered response)</small>`;
+    // Handle different environments
+    if (isGitHubPages) {
+      const staticMsg = document.createElement('p');
+      staticMsg.innerHTML = `<b>Digital Twin:</b> <em style="color: #666;">Thanks for your interest! This AI chat feature is currently available when running with the backend server. For now, you can view my portfolio and download my resume to learn more about my experience.</em>`;
+      chatBox.appendChild(staticMsg);
+      chatBox.scrollTop = chatBox.scrollHeight;
+      return;
     }
-    
-    chatBox.appendChild(responseMsg);
-    
-  } catch (error) {
-    console.error('Chat error:', error);
-    
-    // Remove loading indicator
-    loadingMsg.remove();
-    
-    // Show error message
-    const errorMsg = document.createElement('p');
-    errorMsg.innerHTML = `<b>Digital Twin:</b> <em style="color: #e74c3c;">I'm having trouble accessing my knowledge base. Please try asking in the chat box below.</em>`;
-    chatBox.appendChild(errorMsg);
-  }
   
-  // Auto scroll to bottom
-  chatBox.scrollTop = chatBox.scrollHeight;
+    // Show loading indicator
+    const loadingMsg = document.createElement('p');
+    loadingMsg.innerHTML = `<b>Digital Twin:</b> <em class="typing-indicator">Thinking<span class="dots">...</span></em>`;
+    chatBox.appendChild(loadingMsg);
+    chatBox.scrollTop = chatBox.scrollHeight;
+    
+    try {
+      // Add unique timestamp and request ID to prevent caching and duplicates
+      const timestamp = new Date().getTime();
+      const requestId = Math.random().toString(36).substr(2, 9);
+      const apiUrl = `/api/chat?question=${encodeURIComponent(question)}&t=${timestamp}&rid=${requestId}`;
+      
+      console.log('Making suggestion API request:', requestId, question);
+      
+      const response = await fetch(apiUrl, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      // Remove loading indicator
+      loadingMsg.remove();
+      
+      // Add AI response
+      const responseMsg = document.createElement('p');
+      responseMsg.innerHTML = `<b>Digital Twin:</b> ${data.answer}`;
+      
+      if (data.source === 'rag_system') {
+        responseMsg.innerHTML += ` <small style="color: #888;">(AI-powered response)</small>`;
+      }
+      
+      chatBox.appendChild(responseMsg);
+      
+    } catch (error) {
+      console.error('Chat error:', error);
+      
+      // Remove loading indicator
+      if (loadingMsg.parentNode) {
+        loadingMsg.remove();
+      }
+      
+      // Show error message
+      const errorMsg = document.createElement('p');
+      errorMsg.innerHTML = `<b>Digital Twin:</b> <em style="color: #e74c3c;">I'm having trouble accessing my knowledge base. Please try asking in the chat box below.</em>`;
+      chatBox.appendChild(errorMsg);
+    }
+    
+    // Auto scroll to bottom
+    chatBox.scrollTop = chatBox.scrollHeight;
+    
+  } finally {
+    // Always reset processing flag
+    isProcessing = false;
+  }
 }
 
 // Initialize suggested questions when page loads
@@ -230,77 +296,112 @@ chatForm.addEventListener("submit", async (e) => {
   
   if (!question) return; // Don't send empty messages
   
-  // Remove suggested questions after first interaction
-  const suggestionsElement = chatBox.querySelector('.suggested-questions');
-  if (suggestionsElement) {
-    suggestionsElement.remove();
-  }
-  
-  // Add user message
-  chatBox.innerHTML += `<p><b>You:</b> ${question}</p>`;
-  chatInput.value = "";
-  
-  // Show different behavior for different environments
-  if (isGitHubPages) {
-    // For GitHub Pages, show a helpful message
-    chatBox.innerHTML += `<p><b>Digital Twin:</b> <em style="color: #666;">Thanks for your interest! This AI chat feature is currently available when running locally with the backend server. For now, you can view my portfolio and download my resume to learn more about my experience.</em></p>`;
-    chatBox.scrollTop = chatBox.scrollHeight;
+  // Prevent duplicate requests
+  if (isProcessing) {
+    console.log('Request already in progress, ignoring form submission');
     return;
   }
   
-  // Show loading indicator with typing effect
-  const loadingMsg = document.createElement('p');
-  loadingMsg.innerHTML = `<b>Digital Twin:</b> <em class="typing-indicator">Thinking<span class="dots">...</span></em>`;
-  chatBox.appendChild(loadingMsg);
-  chatBox.scrollTop = chatBox.scrollHeight;
+  // Rate limiting - prevent rapid requests
+  const currentTime = Date.now();
+  if (currentTime - lastRequestTime < REQUEST_DELAY) {
+    console.log('Rate limit: Please wait before making another request');
+    return;
+  }
+  lastRequestTime = currentTime;
+  
+  isProcessing = true;
   
   try {
-    // Determine API URL based on environment
-    const apiUrl = (window.location.hostname.includes('vercel.app') || 
-                   window.location.hostname.includes('tsai-chun-lin-portfolio') ||
-                   window.location.hostname.includes('netlify.app'))
-      ? '/api/chat'  // Vercel/Netlify serverless function endpoint
-      : '/api/chat'; // Default to serverless function
-    
-    const response = await fetch(`${apiUrl}?question=${encodeURIComponent(question)}`, {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-      }
-    });
-    
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+    // Remove suggested questions after first interaction
+    const suggestionsElement = chatBox.querySelector('.suggested-questions');
+    if (suggestionsElement) {
+      suggestionsElement.remove();
     }
     
-    const data = await response.json();
+    // Add user message
+    const userMsg = document.createElement('p');
+    userMsg.innerHTML = `<b>You:</b> ${question}`;
+    chatBox.appendChild(userMsg);
     
-    // Remove loading indicator
-    loadingMsg.remove();
+    // Clear input immediately
+    chatInput.value = "";
     
-    // Add AI response with typing effect
-    const responseMsg = document.createElement('p');
-    responseMsg.innerHTML = `<b>Digital Twin:</b> ${data.answer}`;
-    
-    // Add source indicator if available
-    if (data.source === 'rag_system') {
-      responseMsg.innerHTML += ` <small style="color: #888;">(AI-powered response)</small>`;
+    // Show different behavior for different environments
+    if (isGitHubPages) {
+      // For GitHub Pages, show a helpful message
+      const staticMsg = document.createElement('p');
+      staticMsg.innerHTML = `<b>Digital Twin:</b> <em style="color: #666;">Thanks for your interest! This AI chat feature is currently available when running locally with the backend server. For now, you can view my portfolio and download my resume to learn more about my experience.</em>`;
+      chatBox.appendChild(staticMsg);
+      chatBox.scrollTop = chatBox.scrollHeight;
+      return;
     }
-    
-    chatBox.appendChild(responseMsg);
-    
-  } catch (error) {
-    console.error('Chat error:', error);
-    
-    // Remove loading indicator
-    loadingMsg.remove();
-    
-    // Show error message
-    const errorMsg = document.createElement('p');
-    errorMsg.innerHTML = `<b>Digital Twin:</b> <em style="color: #e74c3c;">I apologize, but I'm having trouble connecting to my knowledge base right now. Please try again in a moment, or feel free to explore my portfolio for more information about my background.</em>`;
-    chatBox.appendChild(errorMsg);
-  }
   
-  // Auto scroll to bottom
-  chatBox.scrollTop = chatBox.scrollHeight;
+    // Show loading indicator with typing effect
+    const loadingMsg = document.createElement('p');
+    loadingMsg.innerHTML = `<b>Digital Twin:</b> <em class="typing-indicator">Thinking<span class="dots">...</span></em>`;
+    chatBox.appendChild(loadingMsg);
+    chatBox.scrollTop = chatBox.scrollHeight;
+    
+    try {
+      // Add unique timestamp and request ID to prevent caching and duplicates
+      const timestamp = new Date().getTime();
+      const requestId = Math.random().toString(36).substr(2, 9);
+      const apiUrl = `/api/chat?question=${encodeURIComponent(question)}&t=${timestamp}&rid=${requestId}`;
+      
+      console.log('Making form API request:', requestId, question);
+      
+      const response = await fetch(apiUrl, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      // Remove loading indicator
+      if (loadingMsg.parentNode) {
+        loadingMsg.remove();
+      }
+      
+      // Add AI response with typing effect
+      const responseMsg = document.createElement('p');
+      responseMsg.innerHTML = `<b>Digital Twin:</b> ${data.answer}`;
+      
+      // Add source indicator if available
+      if (data.source === 'rag_system') {
+        responseMsg.innerHTML += ` <small style="color: #888;">(AI-powered response)</small>`;
+      }
+      
+      chatBox.appendChild(responseMsg);
+      
+    } catch (error) {
+      console.error('Chat error:', error);
+      
+      // Remove loading indicator
+      if (loadingMsg.parentNode) {
+        loadingMsg.remove();
+      }
+      
+      // Show error message
+      const errorMsg = document.createElement('p');
+      errorMsg.innerHTML = `<b>Digital Twin:</b> <em style="color: #e74c3c;">I apologize, but I'm having trouble connecting to my knowledge base right now. Please try again in a moment, or feel free to explore my portfolio for more information about my background.</em>`;
+      chatBox.appendChild(errorMsg);
+    }
+    
+    // Auto scroll to bottom
+    chatBox.scrollTop = chatBox.scrollHeight;
+    
+  } finally {
+    // Always reset processing flag
+    isProcessing = false;
+  }
 });
