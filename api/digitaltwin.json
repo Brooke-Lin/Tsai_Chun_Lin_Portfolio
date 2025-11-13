@@ -30,7 +30,7 @@
       "id": "salary_location_info",
       "title": "Salary and Location Preferences",
       "type": "section",
-      "content": "Expected salary range: $65,000 - $85,000 AUD annually for entry to mid-level developer roles. Open to Melbourne, Sydney, Brisbane locations. Willing to relocate within Australia. Available for hybrid work arrangements. Can start immediately or with 2 weeks notice. Authorized to work in Australia.",
+      "content": "Expected salary range: $60,000 - $65,000 AUD annually for graduate or junior developer roles. Open to Melbourne, Sydney, Brisbane locations. Willing to relocate within Australia. Available for hybrid work arrangements. Can start immediately or with 2 weeks notice. Authorized to work in Australia.",
       "metadata": {
         "category": "employment",
         "tags": [
@@ -58,7 +58,7 @@
       "id": "experience_detailed",
       "title": "Work Experience - Detailed",
       "type": "section",
-      "content": "Technical Support Intern at Ben Cutains (Jan 2025 - Apr 2025): Situation - Company needed website content management and technical support. Task - Organize website content, manage images via WordPress, assist with sales tasks. Action - Implemented systematic content organization, optimized image formats for web performance, created content guidelines for team. Result - Improved website loading speed by 30%, streamlined content workflow, supported $15K in additional sales through technical assistance. Currently Part-time Barista at Kitchen Montague: Developed customer service skills, time management under pressure, team collaboration in fast-paced environment.",
+      "content": "Technical Support Intern at Ben Cutains (Jan 2025 - Apr 2025): Situation - Company needed website content management and technical support. Task - Organize website content, manage images via WordPress, assist with sales tasks. Action - Implemented systematic content organization, optimized image formats for web performance, created content guidelines for team. Currently Part-time Barista at Kitchen Montague: Developed customer service skills, time management under pressure, team collaboration in fast-paced environment.",
       "metadata": {
         "category": "experience",
         "tags": [
@@ -73,7 +73,7 @@
       "id": "skills_detailed",
       "title": "Technical Skills - Detailed",
       "type": "section",
-      "content": "Programming Languages: Python (5 years, advanced level) - web frameworks, data analysis, automation scripts; JavaScript (1 year, intermediate) - DOM manipulation, ES6+, async programming; PHP (6 months, beginner-intermediate) - server-side development, MySQL integration. Frontend: HTML5, CSS3, Bootstrap, responsive design, cross-browser compatibility. Database: MySQL - design, queries, optimization. Version Control: Git/GitHub - branching, merging, collaborative development. Currently learning: React.js, Node.js, Express.js. Familiar with: Agile methodologies, testing fundamentals, documentation practices.",
+      "content": "Programming Languages: Python (1 year, intermediate) - data analysis, automation scripts; JavaScript (1 year, intermediate) - DOM manipulation, async programming; PHP (6 months, beginner-intermediate) - server-side development, MySQL integration. Frontend: HTML5, CSS3, Bootstrap, responsive design, cross-browser compatibility. Database: MySQL - design, queries, optimization. Version Control: Git/GitHub - branching, merging, collaborative development. Familiar with: Agile methodologies, testing fundamentals, documentation practices.",
       "metadata": {
         "category": "skills",
         "tags": [
@@ -87,7 +87,7 @@
       "id": "project_book2drive_star",
       "title": "Book 2 Drive Project - STAR Format",
       "type": "section",
-      "content": "Situation: University capstone project requiring development of a functional driving lesson booking application for 3-person team. Task: Lead frontend development, design user interface, implement booking system with database integration. Action: Designed responsive UI using HTML, CSS, JavaScript; implemented user authentication system; created MySQL database with proper ERD; developed booking workflow with validation; collaborated using Git for version control; conducted user testing with 20+ volunteers. Result: Successfully delivered fully functional web application on time; received High Distinction (85%); application supported 50+ test bookings; implemented features exceeded initial requirements by 20%; gained experience in full-stack development and team leadership.",
+      "content": "Situation: University capstone project requiring development of a functional driving lesson booking application for 3-person team. Task: Lead frontend development, design user interface, implement booking system with database integration. Action: Designed responsive UI using HTML, CSS, JavaScript; implemented user authentication system; created MySQL database with proper ERD; developed booking workflow with validation; collaborated using Git for version control. Result: Successfully delivered fully functional web application on time; implemented features exceeded initial requirements by 20%; gained experience in full-stack development and team leadership.",
       "metadata": {
         "category": "projects",
         "tags": [
