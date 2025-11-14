@@ -350,6 +350,7 @@ chatForm.addEventListener("submit", async (e) => {
       const apiUrl = `/api/chat?question=${encodeURIComponent(question)}&t=${timestamp}&rid=${requestId}`;
       
       console.log('Making form API request:', requestId, question);
+      console.log('API URL:', apiUrl);
       
       const response = await fetch(apiUrl, {
         method: 'GET',
@@ -366,6 +367,7 @@ chatForm.addEventListener("submit", async (e) => {
       }
       
       const data = await response.json();
+      console.log('API Response:', data);
       
       // Remove loading indicator
       if (loadingMsg.parentNode) {
