@@ -4,8 +4,11 @@ from dotenv import load_dotenv
 from upstash_vector import Index
 from groq import Groq
 
-# Load environment variables
-load_dotenv()
+# Load environment variables from parent directory
+import os
+parent_dir = os.path.dirname(os.path.dirname(__file__))
+env_path = os.path.join(parent_dir, '.env')
+load_dotenv(env_path)
 
 # Constants
 JSON_FILE = "digitaltwin.json"
@@ -142,7 +145,7 @@ def query_vectors(index, query_text, top_k=3):
         return None
 
 def generate_response_with_groq(client, prompt, model=DEFAULT_MODEL):
-    """Generate response using Groq"""
+    """Generate response using Groq with proper error handling"""
     try:
         completion = client.chat.completions.create(
             model=model,
@@ -166,25 +169,33 @@ def generate_response_with_groq(client, prompt, model=DEFAULT_MODEL):
         )
         return completion.choices[0].message.content.strip()
     except Exception as e:
-        return f"❌ Error generating response: {str(e)}"
+        error_msg = str(e)
+        if "rate limit" in error_msg.lower():
+            return "I'm experiencing high demand right now. Could you please try your question again in a moment?"
+        elif "quota" in error_msg.lower():
+            return "I'm temporarily unavailable due to API limits. Please try again later."
+        else:
+            print(f"Groq API Error: {error_msg}")
+            return "I'm having trouble generating a response right now. Let me try to help with the information I have available."
 
 def is_inappropriate_question(question):
     """Check if a question is too personal or inappropriate for a professional context"""
     question_lower = question.lower().strip()
     
-    # Personal/private topics
-    personal_keywords = [
-        'age', 'old', 'birthday', 'birth', 'year born',
-        'gender', 'sex', 'male', 'female', 'man', 'woman',
-        'married', 'single', 'relationship', 'dating', 'boyfriend', 'girlfriend',
-        'religion', 'political', 'politics', 'vote',
-        'address', 'home', 'where live', 'personal phone', 'weight', 'height'
+    # Only block truly inappropriate personal questions with context
+    inappropriate_patterns = [
+        # Direct personal questions
+        'how old are you', 'what is your age', 'your age', 'tell me your age',
+        'are you male', 'are you female', 'what gender are you', 'your gender',
+        'are you married', 'do you have a girlfriend', 'do you have a boyfriend',
+        'where do you live', 'what is your address', 'your home address',
+        'your phone number', 'your personal phone'
     ]
     
-    # Check if question contains personal keywords
-    for keyword in personal_keywords:
-        if keyword in question_lower:
-            return True, keyword
+    # Check for exact inappropriate patterns
+    for pattern in inappropriate_patterns:
+        if pattern in question_lower:
+            return True, pattern.split()[0]  # Return first word as keyword
     
     return False, None
 
@@ -215,10 +226,11 @@ def rag_query(index, groq_client, question):
         # Step 1: Query vector database
         results = query_vectors(index, question, top_k=3)
         
-        # Check relevance threshold - if no good matches, provide intelligent fallback
+        # Check relevance threshold - Upstash mxbai-embed-large-v1 is high quality
         best_score = results[0].score if results and len(results) > 0 else 0
         
-        if not results or len(results) == 0 or best_score < 0.5:
+        # Lower threshold for Upstash's high-quality embeddings (MTEB score 64.68)
+        if not results or len(results) == 0 or best_score < 0.25:
             return handle_out_of_scope_question(groq_client, question)
         
         # Step 2: Extract relevant content
@@ -228,8 +240,8 @@ def rag_query(index, groq_client, question):
             metadata = result.metadata or {}
             score = result.score
             
-            # Only include results with decent relevance scores
-            if score < 0.3:
+            # Include results with reasonable relevance scores for high-quality embeddings
+            if score < 0.15:
                 continue
                 
             # Check if this is Q&A format or old content chunk format
