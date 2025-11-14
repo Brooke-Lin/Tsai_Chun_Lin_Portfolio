@@ -5,6 +5,38 @@ import os
 import time
 from collections import defaultdict
 
+# Try to import the RAG system
+try:
+    from digitaltwin_rg import setup_groq_client, setup_vector_database, rag_query
+    RAG_AVAILABLE = True
+    print("✅ RAG system loaded successfully")
+    
+    # Initialize RAG clients once at startup
+    RAG_GROQ_CLIENT = None
+    RAG_INDEX = None
+    
+    def initialize_rag():
+        global RAG_GROQ_CLIENT, RAG_INDEX
+        if RAG_GROQ_CLIENT is None or RAG_INDEX is None:
+            print("🔄 Initializing RAG system...")
+            RAG_GROQ_CLIENT = setup_groq_client()
+            RAG_INDEX = setup_vector_database()
+            if RAG_GROQ_CLIENT and RAG_INDEX:
+                print("✅ RAG system initialized successfully!")
+            else:
+                print("❌ Failed to initialize RAG system")
+        return RAG_GROQ_CLIENT, RAG_INDEX
+    
+except ImportError as e:
+    print(f"⚠️ RAG system not available: {e}")
+    print("📋 Falling back to direct JSON responses")
+    RAG_AVAILABLE = False
+    RAG_GROQ_CLIENT = None
+    RAG_INDEX = None
+    
+    def initialize_rag():
+        return None, None
+
 # Simple in-memory cache to prevent duplicate requests
 request_cache = {}
 rate_limit_cache = defaultdict(list)
@@ -52,6 +84,28 @@ def get_cached_response(cache_key):
 def cache_response(cache_key, response):
     """Cache response for future use"""
     request_cache[cache_key] = (time.time(), response)
+
+def get_rag_response(question: str) -> str:
+    """Get response using RAG system"""
+    if not RAG_AVAILABLE:
+        print("📋 RAG not available, using direct search")
+        return smart_search_response(question)
+    
+    try:
+        print(f"🤖 Processing RAG query: {question}")
+        groq_client, index = initialize_rag()
+        
+        if not groq_client or not index:
+            print("❌ RAG initialization failed, falling back")
+            return smart_search_response(question)
+        
+        response = rag_query(index, groq_client, question)
+        return response
+        
+    except Exception as e:
+        print(f"❌ RAG system error: {e}")
+        print("📋 Falling back to direct search")
+        return smart_search_response(question)
 
 
 def load_digitaltwin_data():
@@ -231,8 +285,8 @@ class handler(BaseHTTPRequestHandler):
                 self.wfile.write(json.dumps(cached_response).encode())
                 return
             
-            # Get response using smart search system
-            answer = smart_search_response(question)
+            # Get response using RAG system (with fallback to smart search)
+            answer = get_rag_response(question)
             
             response = {
                 "answer": answer,

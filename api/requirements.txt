@@ -1,5 +1,9 @@
-# No external dependencies needed for simplified chat API
-# Uses only standard Python libraries:
+# RAG System Dependencies
+upstash-vector>=0.3.0
+groq>=0.4.0
+python-dotenv>=1.0.0
+
+# Standard Python libraries (built-in):
 # - json (built-in)
 # - urllib.parse (built-in) 
 # - http.server.BaseHTTPRequestHandler (built-in)
