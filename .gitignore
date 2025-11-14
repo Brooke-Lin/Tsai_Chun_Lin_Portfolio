@@ -13,11 +13,8 @@ env/
 # VS Code
 .vscode/
 
-# MCP and backend files (not needed for GitHub Pages)
-digital_twin_mcp_server.py
-digitaltwin_api.py
-digitaltwin_rg.py
-start_mcp_server.py
+# Old/legacy files (not needed)
+# Note: Keep digitaltwin_rag.py as it's the course-compliant version
 
 # Documentation (optional - uncomment if you want to exclude)
 # *.md

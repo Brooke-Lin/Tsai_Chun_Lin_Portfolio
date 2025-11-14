@@ -5,11 +5,15 @@ import os
 import time
 from collections import defaultdict
 
-# Try to import the RAG system
+# Try to import the RAG system from parent directory
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+
 try:
-    from digitaltwin_rg import setup_groq_client, setup_vector_database, rag_query
+    from digitaltwin_rag import setup_groq_client, setup_vector_database, rag_query
     RAG_AVAILABLE = True
-    print("✅ RAG system loaded successfully")
+    print("✅ Course-compliant RAG system loaded successfully")
     
     # Initialize RAG clients once at startup
     RAG_GROQ_CLIENT = None
