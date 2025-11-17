@@ -6,12 +6,12 @@ const timeline = gsap.timeline({ repeat: -1, repeatDelay: 2 });
 //repeatDelay: 2 means wait 2 seconds before repeating the whole animation
 const chars = document.querySelectorAll(".text");
 
-gsap.set(".one", { color: "#3498DB" });
-gsap.set(".two", { color: "#E74C3C" });
-gsap.set(".three", { color: "#F1C40F" });
-gsap.set(".four", { color: "#3498DB" });
-gsap.set(".five", { color: "#27AE60" });
-gsap.set(".six", { color: "#E74C3C" });
+gsap.set(".one", { color: "#FFEAF3" });
+gsap.set(".two", { color: "#FFDFF0" });
+gsap.set(".three", { color: "#FFD3EB" });
+gsap.set(".four", { color: "#FFC8E6" });
+gsap.set(".five", { color: "#FFBDDF" });
+gsap.set(".six", { color: "#FFB3D9" });
 //These lines set different colors for elements with classes .one, .two, .three, etc
 //They do not animate - they just immediately apply styles
 
