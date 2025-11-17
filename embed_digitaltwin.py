@@ -1,75 +1,179 @@
 #!/usr/bin/env python3
 """
-Digital Twin Embedding Script
-Processes digitaltwin.json content chunks and uploads to Upstash Vector database
-Based on the course requirements for structured RAG data
+Digital Twin Embedding Script - Data Preparation for RAG System
+
+Purpose: This script prepares your professional data for the AI chat system
+
+What this script does:
+1. Reads your professional information from digitaltwin.json
+2. Converts text content into searchable vectors (embeddings)
+3. Uploads vectors to Upstash Vector database
+4. Tests the search functionality
+
+Why Embeddings?:
+- Embeddings convert text into mathematical vectors
+- Similar concepts have similar vectors (semantic search)
+- Example: "job" and "career" are close in vector space
+- Enables AI to find relevant information based on meaning, not just keywords
+
+When to run this script:
+- First time setup: python embed_digitaltwin.py
+- After updating your professional data in digitaltwin.json
+- To reset/refresh your AI knowledge base
+
+Process Flow:
+JSON Data → Text Chunks → Vector Embeddings → Database Storage → Search Testing
 """
 
-import os
-import json
-from dotenv import load_dotenv
-from upstash_vector import Index
+# Import required libraries
+import os                    # For environment variables
+import json                  # For parsing JSON data files
+from dotenv import load_dotenv    # For loading .env file with API keys
+from upstash_vector import Index  # Upstash vector database client
 
-# Load environment variables
+# Load environment variables from .env file
+# This reads database URLs and tokens securely
 load_dotenv()
 
-# Constants
-JSON_FILE = "digitaltwin.json"
-UPSTASH_VECTOR_REST_URL = os.getenv('UPSTASH_VECTOR_REST_URL')
-UPSTASH_VECTOR_REST_TOKEN = os.getenv('UPSTASH_VECTOR_REST_TOKEN')
+# Configuration Constants
+JSON_FILE = "digitaltwin.json"                           # Your professional data file
+UPSTASH_VECTOR_REST_URL = os.getenv('UPSTASH_VECTOR_REST_URL')      # Database URL
+UPSTASH_VECTOR_REST_TOKEN = os.getenv('UPSTASH_VECTOR_REST_TOKEN')  # Database access token
 
 def setup_vector_database():
-    """Setup Upstash Vector database connection"""
+    """
+    Establish Connection to Upstash Vector Database
+    
+    What this does:
+    1. Validates database credentials from .env file
+    2. Creates connection to Upstash Vector cloud service
+    3. Returns database index object for operations
+    
+    Upstash Vector is a cloud vector database that:
+    - Stores text as mathematical vectors (embeddings)
+    - Provides fast similarity search
+    - Has built-in embedding generation
+    - Requires no local setup or maintenance
+    
+    Credentials needed in .env file:
+    - UPSTASH_VECTOR_REST_URL: Your database endpoint
+    - UPSTASH_VECTOR_REST_TOKEN: Authentication token
+    
+    Returns:
+        Database index object or None if connection fails
+    """
     print("🔄 Setting up Upstash Vector database...")
     
+    # Validate that required environment variables exist
     if not UPSTASH_VECTOR_REST_URL or not UPSTASH_VECTOR_REST_TOKEN:
         print("❌ UPSTASH_VECTOR_REST_URL or UPSTASH_VECTOR_REST_TOKEN not found in .env file")
+        print("💡 Please check your .env file has the correct Upstash credentials")
         return None
     
     try:
+        # Create database connection using credentials
         index = Index(
-            url=UPSTASH_VECTOR_REST_URL,
-            token=UPSTASH_VECTOR_REST_TOKEN
+            url=UPSTASH_VECTOR_REST_URL,      # Database endpoint URL
+            token=UPSTASH_VECTOR_REST_TOKEN   # Authentication token
         )
         print("✅ Connected to Upstash Vector successfully!")
         return index
     except Exception as e:
         print(f"❌ Error connecting to Upstash Vector: {str(e)}")
+        print("💡 Check if your Upstash credentials are correct")
         return None
 
 def load_digital_twin_data():
-    """Load digital twin data from JSON file"""
+    """
+    Load Your Professional Data from JSON File
+    
+    What this does:
+    1. Opens and reads digitaltwin.json file
+    2. Parses JSON structure containing your professional information
+    3. Returns structured data for processing
+    
+    digitaltwin.json structure:
+    {
+        "personal": {...},           // Basic info, contact details
+        "experience": [...],         // Work history
+        "education": [...],          // Academic background  
+        "content_chunks": [...]      // Searchable content pieces
+    }
+    
+    The content_chunks section is most important for AI:
+    - Contains bite-sized pieces of your professional info
+    - Each chunk has title, content, metadata, and tags
+    - These chunks become searchable vectors in the database
+    
+    Returns:
+        Parsed JSON data dictionary or None if file not found
+    """
     try:
+        # Open and read JSON file with UTF-8 encoding (supports special characters)
         with open(JSON_FILE, 'r', encoding='utf-8') as f:
-            data = json.load(f)
+            data = json.load(f)  # Parse JSON into Python dictionary
         print(f"✅ Loaded digital twin data from {JSON_FILE}")
         return data
     except FileNotFoundError:
         print(f"❌ {JSON_FILE} not found! Please create the file first.")
+        print("💡 Make sure digitaltwin.json exists in the current directory")
         return None
     except Exception as e:
         print(f"❌ Error loading {JSON_FILE}: {str(e)}")
+        print("💡 Check if the JSON file is properly formatted")
         return None
 
 def prepare_vectors_from_content_chunks(digital_twin_data):
-    """Prepare vectors from content chunks in the digital twin data"""
+    """
+    Convert Professional Data into Vector Format
+    
+    What this does:
+    1. Extracts content_chunks from your professional data
+    2. Combines title and content for better search context
+    3. Packages each chunk into vector format for database upload
+    4. Preserves metadata for filtering and context
+    
+    Vector Format Explained:
+    Each vector is a tuple: (id, text_to_embed, metadata)
+    - id: Unique identifier for the content piece
+    - text_to_embed: The actual text that becomes a vector
+    - metadata: Additional info stored with the vector
+    
+    Why Combine Title + Content?:
+    "Education: I have a Master's degree..." is more searchable than just the content
+    This gives the AI better context when matching user questions
+    
+    Example transformation:
+    Input chunk: {"id": "edu1", "title": "Education", "content": "Master's degree..."}
+    Output vector: ("edu1", "Education: Master's degree...", {metadata})
+    
+    Parameters:
+        digital_twin_data: Loaded JSON data from digitaltwin.json
+    
+    Returns:
+        List of vector tuples ready for database upload
+    """
+    # Extract content chunks from the loaded data
     content_chunks = digital_twin_data.get('content_chunks', [])
     
     if not content_chunks:
         print("❌ No content_chunks found in digital twin data")
+        print("💡 Make sure your digitaltwin.json has a 'content_chunks' section")
         return []
     
     vectors = []
     
+    # Process each content chunk
     for chunk in content_chunks:
-        # Create enriched text for embedding
+        # Create enriched text by combining title and content
+        # This gives better search context than content alone
         enriched_text = f"{chunk['title']}: {chunk['content']}"
         
-        # Prepare vector with metadata
+        # Create vector tuple in format expected by Upstash Vector
         vector = (
-            chunk['id'],  # ID
-            enriched_text,  # Text to embed
-            {
+            chunk['id'],          # Unique identifier
+            enriched_text,        # Text that will be converted to embedding
+            {                     # Metadata stored alongside the vector
                 "title": chunk['title'],
                 "type": chunk['type'], 
                 "content": chunk['content'],
