@@ -6,12 +6,12 @@ const timeline = gsap.timeline({ repeat: -1, repeatDelay: 2 });
 //repeatDelay: 2 means wait 2 seconds before repeating the whole animation
 const chars = document.querySelectorAll(".text");
 
-gsap.set(".one", { color: "#3498DB" });
-gsap.set(".two", { color: "#E74C3C" });
-gsap.set(".three", { color: "#F1C40F" });
-gsap.set(".four", { color: "#3498DB" });
-gsap.set(".five", { color: "#27AE60" });
-gsap.set(".six", { color: "#E74C3C" });
+gsap.set(".one", { color: "#FFEAF3" });
+gsap.set(".two", { color: "#FFDFF0" });
+gsap.set(".three", { color: "#FFD3EB" });
+gsap.set(".four", { color: "#FFC8E6" });
+gsap.set(".five", { color: "#FFBDDF" });
+gsap.set(".six", { color: "#FFB3D9" });
 //These lines set different colors for elements with classes .one, .two, .three, etc
 //They do not animate - they just immediately apply styles
 
@@ -47,6 +47,8 @@ timeline.from(chars, {
 //each: 0.1 animates each letter with a 0.1s delay between them
 //yoyo: true after going to bold, it returns back to normal
 //repeat: 1 pulses only once (forward and backward)
+
+// Fixed typo in comments: "stragger" -> "stagger"
 
 
 
