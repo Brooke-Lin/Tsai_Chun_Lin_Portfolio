@@ -1,5 +1,9 @@
-//Background image 1 for Brooke animation
-const timeline = gsap.timeline({ repeat: -1, repeatDelay: 2 }); // repeatDelay adds 5 seconds between loops
+//BACKGROUND IMAGE 1 FOR BROOKE ANIMATION
+
+const timeline = gsap.timeline({ repeat: -1, repeatDelay: 2 }); 
+//gsap.timeline() lets you chain multiple animations in a sequence
+//repeat: -1 means loop forever
+//repeatDelay: 2 means wait 2 seconds before repeating the whole animation
 const chars = document.querySelectorAll(".text");
 
 gsap.set(".one", { color: "#3498DB" });
@@ -8,6 +12,8 @@ gsap.set(".three", { color: "#F1C40F" });
 gsap.set(".four", { color: "#3498DB" });
 gsap.set(".five", { color: "#27AE60" });
 gsap.set(".six", { color: "#E74C3C" });
+//These lines set different colors for elements with classes .one, .two, .three, etc
+//They do not animate - they just immediately apply styles
 
 timeline.from(chars, {
     opacity: 0,
@@ -16,6 +22,13 @@ timeline.from(chars, {
     duration: 0.6,
     stagger: 0.1
 })
+//This animates all letters (chars):
+//opacity: 0 means letters start invisible
+//scale: 0 means they start tiny and grow to normal size
+//ease: "back.out(1.7)" gives a bounce-back effect
+//duration: 0.6 means each animation lasts 0.6 seconds
+//stragger: 0.1 means letters appear one after another every 0.1s, not all at once
+
 .to(".text", {
     "--font-weight": 900,
     duration: 1.2,
@@ -23,46 +36,66 @@ timeline.from(chars, {
     stagger: {
         yoyo: true,
         each: 0.1,
-        repeat: 1 // keep each letter pulsing once before reset
+        repeat: 1 
     }
 }, "+=0.5");
+//Targets all elements with class .text
+//Animates the CSS variable --font-weight to 900
+//Uses sine.inOut for smoother pulsing
+//Starts 0.5 seconds after the previous animation finishes (+=0.5)
+//Inside the stragger: 
+//each: 0.1 animates each letter with a 0.1s delay between them
+//yoyo: true after going to bold, it returns back to normal
+//repeat: 1 pulses only once (forward and backward)
 
-// Custom Burger Menu Animation
+
+
+
+
+//CUSTOM BURGER MENU ANIMATION
+
 document.addEventListener('DOMContentLoaded', function() {
+//This ensures all HTML elements exist before the script tries to access them
     const burgerContainer = document.getElementById('burger-container');
     const navbarToggler = document.querySelector('.navbar-toggler');
     const navbarCollapse = document.getElementById('navbarmenu');
     const bsCollapse = new bootstrap.Collapse(navbarCollapse, { toggle: false });
+    //This creates a Collapse object that allows you to open and close the menu using JavaScript:
+    //bsCollapse.show(), bsCollapse.hide(), bsCollapse.toggle()
+    //{toggle: false} means: don't automatically open/close the menu when creating this object
     
-    // Handle burger menu click - let Bootstrap handle the toggle
     navbarToggler.addEventListener('click', function() {
-        // Bootstrap will handle opening/closing, we just sync the animation
+
     });
-    
-    // Handle Bootstrap collapse events to sync burger animation
+    //Bootstrap already handles the toggle. So this click event is not used to open the menu - it's only here in case you need to sync custom animations
+
     navbarCollapse.addEventListener('show.bs.collapse', function() {
         burgerContainer.classList.add('open');
     });
+    //Adds class .open to trigger your CSS animation 
     
     navbarCollapse.addEventListener('hide.bs.collapse', function() {
         burgerContainer.classList.remove('open');
     });
+    //Removes .open so burger returns to normal
     
-    // Close menu when clicking on nav links (for mobile)
     const navLinks = document.querySelectorAll('.nav-link');
     navLinks.forEach(link => {
         link.addEventListener('click', function(e) {
-            // Check if we're on mobile/tablet and menu is open
             if (window.innerWidth < 992 && navbarCollapse.classList.contains('show')) {
-                // Close the Bootstrap collapse
                 bsCollapse.hide();
             }
         });
     });
+    //On small screens (<992px = mobile/tablet). If the menu is open, and the user clicks any navigation link, then close the menu automatically
 });
 
 
-//Chatbox toggle
+
+
+
+// 1. CHATBOX TOGGLE (OPEN/CLOSE FEATURE)
+
 const chatSection = document.getElementById('chat-section');
 const toggleButton = document.getElementById('chat-toggle');
 const closeButton = document.getElementById('close-chat');
@@ -70,7 +103,6 @@ const closeButton = document.getElementById('close-chat');
 toggleButton.addEventListener('click', () => {
   chatSection.classList.toggle('active');
   
-  // Add suggested questions if not already present when chat opens
   if (chatSection.classList.contains('active')) {
     const existingSuggestions = chatBox.querySelector('.suggested-questions');
     if (!existingSuggestions) {
@@ -86,18 +118,26 @@ closeButton.addEventListener('click', () => {
 });
 
 
-//connect the website to the API
+
+// 2. CONNECTING WEBSITE TO THE API
+
 const chatForm = document.getElementById("chat-form");
 const chatInput = document.getElementById("chat-input");
 const chatBox = document.getElementById("chat-box");
+//This part prepares everything needed to call your AI
 
-// Prevent multiple concurrent requests
+
+
+// 3. REQUEST CONTROL (PREVENT SPAM/ DUPLICATES)
+
 let isProcessing = false;
+//Prevents sending a new request if one is still running
 let lastRequestTime = 0;
-const REQUEST_DELAY = 1000; // Minimum 1 second between requests
-let lastResponseContent = ""; // Track last response to prevent duplicates
+const REQUEST_DELAY = 1000;
+//Minimum 1 second between messages
+let lastResponseContent = ""; 
+//Avoid showing the same response twice (useful for Groq or AI that sometimes repeats)
 
-// Debounce function to prevent rapid requests
 function debounce(func, delay) {
   let timeoutId;
   return function (...args) {
@@ -117,7 +157,11 @@ function isDuplicateResponse(response) {
   return false;
 }
 
-// Predefined suggestion questions (answers will come from AI)
+
+
+// 4. SUGGESTED QUESTIONS SYSTEM
+
+//An array of pre-made questions that your AI will answer
 const chatSuggestions = {
   "suggestions": [
     {
@@ -153,9 +197,9 @@ const chatSuggestions = {
       "category": "skills"
     }
   ]
-};
+}; 
 
-// Function to create suggested questions
+//Creating the suggestion buttons
 function createSuggestedQuestions() {
   const suggestionsContainer = document.createElement('div');
   suggestionsContainer.className = 'suggested-questions';
@@ -164,7 +208,8 @@ function createSuggestedQuestions() {
   intro.textContent = 'Try asking me about:';
   suggestionsContainer.appendChild(intro);
   
-  chatSuggestions.suggestions.forEach(suggestion => {
+  // Only show up to 3 suggested questions to keep the UI compact
+  chatSuggestions.suggestions.slice(0, 3).forEach(suggestion => {
     const button = document.createElement('button');
     button.className = 'suggestion-btn';
     button.textContent = suggestion.question;
@@ -175,20 +220,23 @@ function createSuggestedQuestions() {
   return suggestionsContainer;
 }
 
-// Function to handle suggestion clicks
+
+
+// 5. WHEN USER CLICKS A SUGGESTED QUESTION
+
 async function handleSuggestionClick(question) {
-  // Prevent duplicate requests
+//This is one of the most important parts
   if (isProcessing) {
     console.log('Request already in progress, ignoring duplicate click');
     return;
-  }
+  }//It prevents double requests
   
-  // Rate limiting - prevent rapid requests
   const currentTime = Date.now();
   if (currentTime - lastRequestTime < REQUEST_DELAY) {
     console.log('Rate limit: Please wait before making another request');
     return;
-  }
+  }//It prevents spam clicking
+
   lastRequestTime = currentTime;
   
   isProcessing = true;
@@ -197,7 +245,7 @@ async function handleSuggestionClick(question) {
     // Clear any existing input
     chatInput.value = "";
     
-    // Add user message
+    //Add message to chat
     const userMsg = document.createElement('p');
     userMsg.innerHTML = `<b>You:</b> ${question}`;
     chatBox.appendChild(userMsg);
@@ -287,7 +335,7 @@ async function handleSuggestionClick(question) {
 const suggestedQuestions = createSuggestedQuestions();
 chatBox.appendChild(suggestedQuestions);
 
-// Check if running on GitHub Pages (static hosting without backend)
+// 6. GITHUB PAGES MODE
 const isGitHubPages = window.location.hostname.includes('github.io');
 
 chatForm.addEventListener("submit", async (e) => {
