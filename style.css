@@ -355,8 +355,8 @@ body {
     position: fixed;
     bottom: 90px;
     right: 20px;
-    width: 300px;
-    height: 400px;
+    width: 380px;
+    height: 500px;
     background-color: #f8f9fa;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
@@ -400,6 +400,8 @@ body {
     border-radius: 6px;
     padding: 10px;
     overflow-y: auto;
+    font-size: 0.875em;
+    line-height: 1.4;
 }
 
 /* Suggested questions styling */
@@ -510,10 +512,11 @@ body {
 @media (max-width: 768px) {
     .chat-section {
         width: calc(100vw - 40px);
-        max-width: 350px;
+        max-width: 400px;
         right: 20px;
         left: 20px;
         margin: 0 auto;
+        height: 450px;
     }
     
     .chat-toggle-btn {
@@ -533,7 +536,7 @@ body {
         width: calc(100vw - 20px);
         right: 10px;
         left: 10px;
-        height: 350px;
+        height: 400px;
         bottom: 80px;
     }
     
